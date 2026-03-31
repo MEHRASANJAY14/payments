@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Payment System</title>
 
 <style>
@@ -11,36 +11,23 @@ body {
   background:#f2f4f8;
 }
 
-/* HEADER STRIP */
+/* HEADER */
 .header {
   position:fixed;
   top:0;
   width:100%;
-  background:#0f2a5f;
+  background:linear-gradient(90deg,#0f2a5f,#3f63b5);
   color:#fff;
   padding:10px;
   text-align:center;
   z-index:1000;
 }
 
-.header h2 {
-  margin:0;
-  font-size:16px;
-}
-
-.sub {
-  font-size:11px;
-}
-
-.time {
-  font-size:12px;
-}
-
-/* CONTENT AREA */
+/* CONTENT */
 .container {
   margin-top:80px;
   margin-bottom:80px;
-  padding:10px;
+  padding:12px;
   display:grid;
   grid-template-columns: repeat(2, 1fr);
   gap:12px;
@@ -49,21 +36,15 @@ body {
 /* CARDS */
 .card {
   background:#fff;
-  padding:20px 10px;
+  padding:18px;
   border-radius:15px;
   text-align:center;
-  font-size:14px;
   font-weight:bold;
   box-shadow:0 4px 10px rgba(0,0,0,0.2);
   cursor:pointer;
-  transition:0.2s;
 }
 
-.card:hover {
-  transform:scale(1.05);
-}
-
-/* FOOTER STRIP */
+/* FOOTER */
 .footer {
   position:fixed;
   bottom:0;
@@ -75,92 +56,132 @@ body {
   font-size:12px;
 }
 
-.btn {
-  display:inline-block;
-  background:#fff;
-  color:#333;
-  padding:5px 12px;
-  margin:3px;
-  border-radius:10px;
-  text-decoration:none;
-  font-size:11px;
+/* MODAL */
+.modal {
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.5);
 }
 
-.small-text {
-  font-size:10px;
-  opacity:0.8;
+.modal-content {
+  background:#fff;
+  margin:10% auto;
+  padding:20px;
+  width:90%;
+  max-width:400px;
 }
+
+table {
+  width:100%;
+  border-collapse: collapse;
+  margin-top:10px;
+}
+
+td, th {
+  border:1px solid #ccc;
+  padding:5px;
+  text-align:center;
+}
+
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
 <div class="header">
-  <h2>💰 PAYMENT SYSTEM</h2>
-  <div class="sub">Smart Entry</div>
-  <div id="greeting"></div>
-  <div class="time" id="time"></div>
+  <h3>💰 Payment System</h3>
 </div>
 
-<!-- CONTENT -->
 <div class="container">
 
-  <div class="card" onclick="openPage('customer.html')">
-    👤 Customer
-  </div>
+  <div class="card" onclick="openPage('payment.html')">💸 Add Payment</div>
 
-  <div class="card" onclick="openPage('payment.html')">
-    💸 Payment
-  </div>
+  <div class="card" onclick="printReceipt()">🧾 Print Receipt</div>
 
-  <div class="card" onclick="printReceipt()">
-    🧾 Receipt
-  </div>
+  <div class="card" onclick="openReport()">📊 Generate Report</div>
 
-  <div class="card" onclick="openPage('report.html')">
-    📊 Report
-  </div>
+  <div class="card" onclick="location.reload()">🔄 Refresh</div>
 
 </div>
 
-<!-- FOOTER -->
 <div class="footer">
+  maintained and developed by sanjay mehra
+</div>
 
-  <a href="index.html" class="btn">🏠 Home</a>
-  <a href="" onclick="location.reload()" class="btn">🔄 Refresh</a>
+<!-- REPORT MODAL -->
+<div class="modal" id="reportModal">
+  <div class="modal-content">
+    <h3>Report</h3>
 
-  <div class="small-text">
-    Developed & maintained and developed by Sanjay mehra
+    <input type="date" id="fromDate"><br><br>
+    <input type="date" id="toDate"><br><br>
+
+    <button onclick="loadReport()">Generate</button>
+    <button onclick="closeReport()">Close</button>
+
+    <div id="result"></div>
   </div>
-
 </div>
 
 <script>
-// Greeting
-const hour = new Date().getHours();
-let msg = hour < 12 ? "☀️ Morning" : hour < 18 ? "🌤️ Afternoon" : "🌙 Evening";
-document.getElementById("greeting").innerText = msg;
-
-// Time
-function updateTime(){
-  const now = new Date();
-  document.getElementById("time").innerText = now.toLocaleTimeString();
-}
-setInterval(updateTime,1000);
-updateTime();
+const API = "https://opensheet.elk.sh/1imhirRNpRmDnxaTEANyCtcyr-IOt_PNXwVYUeDOWeBE/Payments";
 
 // Navigation
-function openPage(page){
-  window.location.href = page;
-}
+function openPage(p){ window.location.href = p; }
 
-// Print Receipt
+// Receipt
 function printReceipt(){
   let id = prompt("Enter Transaction ID");
   if(id){
     window.location.href = "receipt.html?id=" + id;
   }
+}
+
+// Open modal
+function openReport(){
+  document.getElementById("reportModal").style.display = "block";
+}
+
+// Close modal
+function closeReport(){
+  document.getElementById("reportModal").style.display = "none";
+}
+
+// Load report
+function loadReport(){
+  let from = new Date(document.getElementById("fromDate").value);
+  let to = new Date(document.getElementById("toDate").value);
+
+  fetch(API)
+  .then(res => res.json())
+  .then(data => {
+
+    let html = "<table><tr><th>Date</th><th>Name</th><th>Amount</th></tr>";
+    let total = 0;
+
+    data.forEach(row => {
+      let d = new Date(row["Date"]);
+
+      if(d >= from && d <= to){
+        total += Number(row["Amount"]);
+
+        html += `<tr>
+          <td>${row["Date"]}</td>
+          <td>${row["Person Name"]}</td>
+          <td>₹${row["Amount"]}</td>
+        </tr>`;
+      }
+    });
+
+    html += "</table>";
+    html += "<h3>Total: ₹" + total + "</h3>";
+
+    document.getElementById("result").innerHTML = html;
+  });
 }
 </script>
 
