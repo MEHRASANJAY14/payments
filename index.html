@@ -8,111 +8,87 @@
 body {
   margin:0;
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(-45deg, #1e3c72, #2a5298, #00c6ff, #0072ff);
-  background-size: 400% 400%;
-  animation: gradient 10s ease infinite;
+  background: linear-gradient(to bottom, #1c3c75, #3f63b5);
   color:white;
-}
-
-/* Animated BG */
-@keyframes gradient {
-  0% {background-position:0% 50%;}
-  50% {background-position:100% 50%;}
-  100% {background-position:0% 50%;}
+  text-align:center;
 }
 
 /* HEADER */
 .header {
-  position:fixed;
-  top:0;
-  width:100%;
-  text-align:center;
-  padding:12px;
-  backdrop-filter: blur(10px);
+  padding:20px 10px;
 }
 
 .header h2 {
-  margin:0;
+  margin:5px 0;
   font-size:18px;
+  letter-spacing:1px;
 }
 
-.time {
-  font-size:12px;
+.sub {
+  font-size:13px;
+  opacity:0.9;
 }
 
-/* CONTENT */
-.container {
-  margin-top:90px;
-  margin-bottom:80px;
-  display:grid;
-  grid-template-columns: repeat(2,1fr);
-  gap:15px;
-  padding:15px;
+.greeting {
+  margin-top:10px;
+  font-size:14px;
 }
 
-/* GLASS CARDS */
-.card {
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(12px);
-  padding:20px;
-  border-radius:20px;
-  text-align:center;
+.datetime {
   font-weight:bold;
+  margin-top:5px;
+}
+
+/* CARDS */
+.container {
+  margin-top:20px;
+  padding:10px;
+}
+
+.card {
+  background:#fff;
+  color:#1c3c75;
+  margin:15px auto;
+  padding:25px;
+  width:85%;
+  border-radius:25px;
+  font-size:18px;
+  font-weight:bold;
+  box-shadow:0 8px 20px rgba(0,0,0,0.3);
+  cursor:pointer;
   transition:0.3s;
-  box-shadow:0 10px 25px rgba(0,0,0,0.3);
 }
 
 .card:hover {
-  transform: translateY(-5px) scale(1.05);
+  transform:scale(1.03);
+}
+
+.icon {
+  font-size:30px;
+  margin-bottom:10px;
 }
 
 /* FOOTER */
 .footer {
-  position:fixed;
-  bottom:0;
-  width:100%;
-  text-align:center;
-  padding:10px;
-  backdrop-filter: blur(10px);
-  font-size:12px;
+  margin-top:20px;
+  padding:15px;
 }
 
-/* MODAL */
-.modal {
-  display:none;
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.6);
-}
-
-.modal-box {
+.btn {
+  display:inline-block;
   background:#fff;
-  color:#000;
-  padding:20px;
-  margin:15% auto;
-  width:90%;
-  max-width:400px;
-  border-radius:15px;
+  color:#333;
+  padding:8px 18px;
+  margin:5px;
+  border-radius:20px;
+  text-decoration:none;
+  font-weight:bold;
 }
 
-input, button {
-  width:100%;
-  padding:10px;
-  margin:5px 0;
-}
-
-table {
-  width:100%;
-  margin-top:10px;
-  border-collapse: collapse;
-}
-
-td, th {
-  border:1px solid #ccc;
-  padding:5px;
+.small {
+  font-size:12px;
+  margin-top:8px;
+  opacity:0.8;
 }
 </style>
 </head>
@@ -121,98 +97,90 @@ td, th {
 
 <!-- HEADER -->
 <div class="header">
-  <h2>💰 Payment System</h2>
-  <div id="greeting"></div>
-  <div class="time" id="time"></div>
+
+  <h2>💰 PAYMENT MANAGEMENT SYSTEM</h2>
+
+  <div class="sub">
+    Track Payments | Reports | Receipts
+  </div>
+
+  <div class="greeting" id="greeting"></div>
+
+  <div class="datetime" id="datetime"></div>
+
+  <div class="sub">
+    Manage your payments easily and securely.
+  </div>
+
 </div>
 
-<!-- CONTENT -->
+<!-- CARDS -->
 <div class="container">
 
   <div class="card" onclick="openPage('payment.html')">
-    💸 Add Payment
+    <div class="icon">💸</div>
+    Add Payment
   </div>
 
   <div class="card" onclick="printReceipt()">
-    🧾 Receipt
+    <div class="icon">🧾</div>
+    Print Receipt
   </div>
 
   <div class="card" onclick="openReport()">
-    📊 Report
-  </div>
-
-  <div class="card" onclick="location.reload()">
-    🔄 Refresh
+    <div class="icon">📊</div>
+    Generate Report
   </div>
 
 </div>
 
 <!-- FOOTER -->
 <div class="footer">
-  maintained and developed by sanjay mehra
-</div>
 
-<!-- REPORT MODAL -->
-<div class="modal" id="modal">
-  <div class="modal-box">
-    <h3>📊 Report</h3>
+  <a href="index.html" class="btn">🏠 Home</a>
+  <a href="" onclick="location.reload()" class="btn">🔄 Refresh</a>
 
-    <input type="date" id="from">
-    <input type="date" id="to">
-
-    <button onclick="loadReport()">Generate</button>
-    <button onclick="closeModal()">Close</button>
-
-    <div id="output"></div>
+  <div class="small">
+    © 2026 Payment System
   </div>
+
+  <div class="small">
+    maintained and developed by sanjay mehra
+  </div>
+
 </div>
 
 <script>
-const API = "https://opensheet.elk.sh/1imhirRNpRmDnxaTEANyCtcyr-IOt_PNXwVYUeDOWeBE/Payments";
-
 // Greeting
 let h = new Date().getHours();
-let g = h<12?"☀️ Morning":h<18?"🌤️ Afternoon":"🌙 Evening";
+let g = h<12 ? "🌅 Good Morning" : h<18 ? "🌤️ Good Afternoon" : "🌙 Good Evening";
 document.getElementById("greeting").innerText = g;
 
-// Time
-setInterval(()=>{
-  document.getElementById("time").innerText = new Date().toLocaleTimeString();
-},1000);
+// Date Time
+function updateTime(){
+  const now = new Date();
+  document.getElementById("datetime").innerText =
+    now.toLocaleDateString() + " | " + now.toLocaleTimeString();
+}
+setInterval(updateTime,1000);
+updateTime();
 
 // Navigation
-function openPage(p){ window.location.href=p; }
+function openPage(p){
+  window.location.href = p;
+}
 
 // Receipt
 function printReceipt(){
   let id = prompt("Enter Transaction ID");
-  if(id) window.location.href="receipt.html?id="+id;
+  if(id){
+    window.location.href = "receipt.html?id=" + id;
+  }
 }
 
-// Modal
-function openReport(){ document.getElementById("modal").style.display="block"; }
-function closeModal(){ document.getElementById("modal").style.display="none"; }
-
 // Report
-function loadReport(){
-  let f = new Date(document.getElementById("from").value);
-  let t = new Date(document.getElementById("to").value);
-
-  fetch(API).then(r=>r.json()).then(data=>{
-    let total=0;
-    let html="<table><tr><th>Date</th><th>Name</th><th>₹</th></tr>";
-
-    data.forEach(x=>{
-      let d=new Date(x["Date"]);
-      if(d>=f && d<=t){
-        total+=Number(x["Amount"]);
-        html+=`<tr><td>${x["Date"]}</td><td>${x["Person Name"]}</td><td>${x["Amount"]}</td></tr>`;
-      }
-    });
-
-    html+="</table><h3>Total ₹"+total+"</h3>";
-    document.getElementById("output").innerHTML=html;
-  });
+function openReport(){
+  window.location.href = "report.html";
 }
 </script>
 
