@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Report</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body { font-family: Arial; padding:20px; }
+
+input, button {
+  padding:10px;
+  margin:5px;
+  width:100%;
+}
+
+table {
+  width:100%;
+  border-collapse: collapse;
+  margin-top:20px;
+}
+
+th, td {
+  border:1px solid #ccc;
+  padding:8px;
+  text-align:center;
+}
+
+th {
+  background:#007bff;
+  color:#fff;
+}
+
+.total {
+  font-weight:bold;
+  margin-top:15px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>📊 Payment Report</h2>
+
+<input type="date" id="fromDate">
+<input type="date" id="toDate">
+
+<button onclick="loadReport()">Generate Report</button>
+
+<div id="result"></div>
+
+<script>
+const API = "https://opensheet.elk.sh/1imhirRNpRmDnxaTEANyCtcyr-IOt_PNXwVYUeDOWeBE/Payments";
+
+function loadReport(){
+  let from = new Date(document.getElementById("fromDate").value);
+  let to = new Date(document.getElementById("toDate").value);
+
+  fetch(API)
+  .then(res => res.json())
+  .then(data => {
+
+    let html = "<table><tr><th>Date</th><th>Name</th><th>Amount</th><th>Mode</th></tr>";
+    let total = 0;
+
+    data.forEach(row => {
+      let d = new Date(row["Date"]);
+
+      if(d >= from && d <= to){
+        total += Number(row["Amount"]);
+
+        html += `<tr>
+          <td>${row["Date"]}</td>
+          <td>${row["Person Name"]}</td>
+          <td>₹${row["Amount"]}</td>
+          <td>${row["Mode"]}</td>
+        </tr>`;
+      }
+    });
+
+    html += "</table>";
+    html += `<div class="total">Total Amount: ₹${total}</div>`;
+
+    document.getElementById("result").innerHTML = html;
+  });
+}
+</script>
+
+</body>
+</html>
