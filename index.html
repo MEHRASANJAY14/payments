@@ -1,146 +1,146 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Payment System</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payment System</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(-45deg, #1e3c72, #2a5298, #00c6ff, #0072ff);
-      background-size: 400% 400%;
-      animation: gradient 10s ease infinite;
-      color: white;
-      text-align: center;
-    }
+<style>
+body {
+  margin:0;
+  font-family: Arial;
+  background: linear-gradient(to bottom, #0f2a5f, #3f63b5);
+  color:white;
+  text-align:center;
+}
 
-    @keyframes gradient {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
+/* HEADER */
+.header {
+  padding:20px;
+}
+.header h2 {
+  margin:5px 0;
+  font-size:20px;
+}
+.sub {
+  font-size:14px;
+  opacity:0.9;
+}
 
-    .header {
-      padding: 30px 10px;
-      font-size: 28px;
-      font-weight: bold;
-    }
+/* TIME */
+.time {
+  margin-top:10px;
+  font-size:16px;
+}
 
-    .clock {
-      font-size: 18px;
-      margin-bottom: 20px;
-    }
+/* CARDS */
+.container {
+  margin-top:30px;
+}
 
-    .container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 20px;
-    }
+.card {
+  background:#fff;
+  color:#333;
+  margin:15px auto;
+  padding:25px;
+  width:85%;
+  border-radius:25px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.3);
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
 
-    .card {
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      padding: 25px;
-      margin: 15px;
-      width: 260px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-      transition: 0.3s;
-    }
+.card:hover {
+  transform:scale(1.05);
+}
 
-    .card:hover {
-      transform: translateY(-10px) scale(1.05);
-    }
+/* FOOTER */
+.footer {
+  margin-top:30px;
+  padding:20px;
+  font-size:14px;
+}
 
-    .card h3 {
-      margin-bottom: 10px;
-    }
+.btns {
+  margin-top:10px;
+}
 
-    .btn {
-      display: inline-block;
-      margin-top: 15px;
-      padding: 10px 15px;
-      background: #ffffff;
-      color: #0072ff;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .btn:hover {
-      background: #0072ff;
-      color: #fff;
-    }
-
-    .footer {
-      margin-top: 40px;
-      padding: 15px;
-      font-size: 14px;
-      opacity: 0.8;
-    }
-
-    @media(max-width:600px){
-      .container {
-        flex-direction: column;
-        align-items: center;
-      }
-    }
-  </style>
+.btn {
+  display:inline-block;
+  background:#fff;
+  color:#333;
+  padding:10px 20px;
+  margin:5px;
+  border-radius:20px;
+  text-decoration:none;
+  font-weight:bold;
+}
+</style>
 </head>
 
 <body>
 
-<div class="header" id="greeting">Welcome</div>
-<div class="clock" id="clock"></div>
+<!-- HEADER -->
+<div class="header">
+  <h2>💰 PAYMENT MANAGEMENT SYSTEM</h2>
+  <div class="sub">Smart Entry & Tracking</div>
 
+  <div id="greeting"></div>
+  <div class="time" id="time"></div>
+</div>
+
+<!-- CARDS -->
 <div class="container">
 
-  <div class="card">
-    <h3>👤 Add Customer</h3>
-    <p>New customer entry kare</p>
-    <a href="customer.html" class="btn">Open</a>
+  <div class="card" onclick="openPage('customer.html')">
+    👤 Add Customer
   </div>
 
-  <div class="card">
-    <h3>💸 Add Payment</h3>
-    <p>Payment record kare</p>
-    <a href="payment.html" class="btn">Open</a>
+  <div class="card" onclick="openPage('payment.html')">
+    💸 Add Payment
   </div>
 
-  <div class="card">
-    <h3>📊 Dashboard</h3>
-    <p>Reports & analytics</p>
-    <a href="#" class="btn">Coming Soon</a>
+  <div class="card" onclick="alert('Coming Soon')">
+    🔍 Search & Report
   </div>
 
 </div>
 
+<!-- FOOTER -->
 <div class="footer">
-  © 2026 Payment System | Made by You 🚀
+  <div class="btns">
+    <a href="index.html" class="btn">🏠 Home</a>
+    <a href="" onclick="location.reload()" class="btn">🔄 Refresh</a>
+  </div>
+
+  <p>© 2026 Payment System</p>
 </div>
 
 <script>
-  // Greeting
-  const hour = new Date().getHours();
-  let msg = "Welcome";
+// Greeting
+const hour = new Date().getHours();
+let msg = "Welcome";
 
-  if(hour < 12) msg = "Good Morning ☀️";
-  else if(hour < 18) msg = "Good Afternoon 🌤️";
-  else msg = "Good Evening 🌙";
+if(hour < 12) msg = "☀️ Good Morning";
+else if(hour < 18) msg = "🌤️ Good Afternoon";
+else msg = "🌙 Good Evening";
 
-  document.getElementById("greeting").innerText = msg + " - Payment System";
+document.getElementById("greeting").innerText = msg;
 
-  // Live Clock
-  function updateClock() {
-    const now = new Date();
-    const time = now.toLocaleTimeString();
-    document.getElementById("clock").innerText = "⏰ " + time;
-  }
+// Time
+function updateTime(){
+  const now = new Date();
+  document.getElementById("time").innerText =
+    now.toLocaleDateString() + " | " + now.toLocaleTimeString();
+}
+setInterval(updateTime,1000);
+updateTime();
 
-  setInterval(updateClock, 1000);
-  updateClock();
+// Navigation
+function openPage(page){
+  window.location.href = page;
+}
 </script>
 
 </body>
