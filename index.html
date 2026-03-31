@@ -17,6 +17,9 @@ body {
 .header {
   padding:20px;
 }
+.header h2 {
+  margin:5px 0;
+}
 .sub {
   font-size:14px;
   opacity:0.9;
@@ -65,11 +68,12 @@ body {
   font-weight:bold;
 }
 
-/* small text */
+/* small footer text */
 .small-text {
   font-size:12px;
-  opacity:0.8;
+  opacity:0.7;
   margin-top:10px;
+  letter-spacing:1px;
 }
 </style>
 </head>
@@ -85,7 +89,7 @@ body {
   <div class="time" id="time"></div>
 </div>
 
-<!-- CARDS -->
+<!-- MAIN CARDS -->
 <div class="container">
 
   <div class="card" onclick="openPage('customer.html')">
@@ -114,9 +118,8 @@ body {
 
   <p>© 2026 Payment System</p>
 
-  <!-- ✅ YOUR TEXT -->
   <div class="small-text">
-    developed and maintained by sanjay mehra
+    maintained and developed by sanjay mehra
   </div>
 
 </div>
@@ -124,10 +127,15 @@ body {
 <script>
 // Greeting
 const hour = new Date().getHours();
-let msg = hour < 12 ? "☀️ Good Morning" : hour < 18 ? "🌤️ Good Afternoon" : "🌙 Good Evening";
+let msg = "Welcome";
+
+if(hour < 12) msg = "☀️ Good Morning";
+else if(hour < 18) msg = "🌤️ Good Afternoon";
+else msg = "🌙 Good Evening";
+
 document.getElementById("greeting").innerText = msg;
 
-// Time
+// Live Time
 function updateTime(){
   const now = new Date();
   document.getElementById("time").innerText =
