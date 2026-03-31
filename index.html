@@ -15,36 +15,40 @@ body {
 
 /* HEADER */
 .header {
-  padding:20px;
+  padding:15px;
 }
 .header h2 {
   margin:5px 0;
+  font-size:18px;
 }
 .sub {
-  font-size:14px;
+  font-size:12px;
   opacity:0.9;
 }
 .time {
-  margin-top:10px;
+  margin-top:5px;
+  font-size:13px;
 }
 
-/* CARDS */
+/* GRID LAYOUT */
 .container {
-  margin-top:30px;
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap:12px;
+  padding:15px;
 }
 
+/* SMALL CARDS */
 .card {
   background:#fff;
   color:#333;
-  margin:15px auto;
-  padding:25px;
-  width:85%;
-  border-radius:25px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.3);
-  font-size:18px;
+  padding:15px;
+  border-radius:15px;
+  box-shadow:0 5px 12px rgba(0,0,0,0.3);
+  font-size:14px;
   font-weight:bold;
   cursor:pointer;
-  transition:0.3s;
+  transition:0.2s;
 }
 
 .card:hover {
@@ -53,27 +57,25 @@ body {
 
 /* FOOTER */
 .footer {
-  margin-top:30px;
-  padding:20px;
+  margin-top:10px;
+  padding:15px;
 }
 
 .btn {
   display:inline-block;
   background:#fff;
   color:#333;
-  padding:10px 20px;
+  padding:8px 15px;
   margin:5px;
-  border-radius:20px;
+  border-radius:15px;
   text-decoration:none;
-  font-weight:bold;
+  font-size:13px;
 }
 
-/* small footer text */
 .small-text {
-  font-size:12px;
+  font-size:11px;
   opacity:0.7;
-  margin-top:10px;
-  letter-spacing:1px;
+  margin-top:8px;
 }
 </style>
 </head>
@@ -82,30 +84,30 @@ body {
 
 <!-- HEADER -->
 <div class="header">
-  <h2>💰 PAYMENT MANAGEMENT SYSTEM</h2>
+  <h2>💰 PAYMENT SYSTEM</h2>
   <div class="sub">Smart Entry & Tracking</div>
 
   <div id="greeting"></div>
   <div class="time" id="time"></div>
 </div>
 
-<!-- MAIN CARDS -->
+<!-- COMPACT GRID -->
 <div class="container">
 
   <div class="card" onclick="openPage('customer.html')">
-    👤 Add Customer
+    👤 Customer
   </div>
 
   <div class="card" onclick="openPage('payment.html')">
-    💸 Add Payment
+    💸 Payment
   </div>
 
   <div class="card" onclick="printReceipt()">
-    🧾 Print Receipt
+    🧾 Receipt
   </div>
 
   <div class="card" onclick="openPage('report.html')">
-    📊 Generate Report
+    📊 Report
   </div>
 
 </div>
@@ -116,8 +118,6 @@ body {
   <a href="index.html" class="btn">🏠 Home</a>
   <a href="" onclick="location.reload()" class="btn">🔄 Refresh</a>
 
-  <p>© 2026 Payment System</p>
-
   <div class="small-text">
     maintained and developed by sanjay mehra
   </div>
@@ -127,19 +127,14 @@ body {
 <script>
 // Greeting
 const hour = new Date().getHours();
-let msg = "Welcome";
-
-if(hour < 12) msg = "☀️ Good Morning";
-else if(hour < 18) msg = "🌤️ Good Afternoon";
-else msg = "🌙 Good Evening";
-
+let msg = hour < 12 ? "☀️ Good Morning" : hour < 18 ? "🌤️ Good Afternoon" : "🌙 Good Evening";
 document.getElementById("greeting").innerText = msg;
 
-// Live Time
+// Time
 function updateTime(){
   const now = new Date();
   document.getElementById("time").innerText =
-    now.toLocaleDateString() + " | " + now.toLocaleTimeString();
+    now.toLocaleTimeString();
 }
 setInterval(updateTime,1000);
 updateTime();
@@ -149,7 +144,7 @@ function openPage(page){
   window.location.href = page;
 }
 
-// Print Receipt
+// Print
 function printReceipt(){
   let id = prompt("Enter Transaction ID");
   if(id){
