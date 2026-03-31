@@ -13,29 +13,11 @@ body {
   text-align:center;
 }
 
-/* HEADER */
-.header {
-  padding:20px;
-}
-.header h2 {
-  margin:5px 0;
-  font-size:20px;
-}
-.sub {
-  font-size:14px;
-  opacity:0.9;
-}
+.header { padding:20px; }
+.sub { font-size:14px; opacity:0.9; }
+.time { margin-top:10px; }
 
-/* TIME */
-.time {
-  margin-top:10px;
-  font-size:16px;
-}
-
-/* CARDS */
-.container {
-  margin-top:30px;
-}
+.container { margin-top:30px; }
 
 .card {
   background:#fff;
@@ -51,20 +33,9 @@ body {
   transition:0.3s;
 }
 
-.card:hover {
-  transform:scale(1.05);
-}
+.card:hover { transform:scale(1.05); }
 
-/* FOOTER */
-.footer {
-  margin-top:30px;
-  padding:20px;
-  font-size:14px;
-}
-
-.btns {
-  margin-top:10px;
-}
+.footer { margin-top:30px; padding:20px; }
 
 .btn {
   display:inline-block;
@@ -81,7 +52,6 @@ body {
 
 <body>
 
-<!-- HEADER -->
 <div class="header">
   <h2>💰 PAYMENT MANAGEMENT SYSTEM</h2>
   <div class="sub">Smart Entry & Tracking</div>
@@ -90,7 +60,6 @@ body {
   <div class="time" id="time"></div>
 </div>
 
-<!-- CARDS -->
 <div class="container">
 
   <div class="card" onclick="openPage('customer.html')">
@@ -101,32 +70,27 @@ body {
     💸 Add Payment
   </div>
 
-  <!-- ✅ NEW PRINT RECEIPT -->
   <div class="card" onclick="printReceipt()">
     🧾 Print Receipt
   </div>
 
-</div>
-
-<!-- FOOTER -->
-<div class="footer">
-  <div class="btns">
-    <a href="index.html" class="btn">🏠 Home</a>
-    <a href="" onclick="location.reload()" class="btn">🔄 Refresh</a>
+  <!-- ✅ NEW REPORT TAB -->
+  <div class="card" onclick="openPage('report.html')">
+    📊 Generate Report
   </div>
 
+</div>
+
+<div class="footer">
+  <a href="index.html" class="btn">🏠 Home</a>
+  <a href="" onclick="location.reload()" class="btn">🔄 Refresh</a>
   <p>© 2026 Payment System</p>
 </div>
 
 <script>
 // Greeting
 const hour = new Date().getHours();
-let msg = "Welcome";
-
-if(hour < 12) msg = "☀️ Good Morning";
-else if(hour < 18) msg = "🌤️ Good Afternoon";
-else msg = "🌙 Good Evening";
-
+let msg = hour < 12 ? "☀️ Good Morning" : hour < 18 ? "🌤️ Good Afternoon" : "🌙 Good Evening";
 document.getElementById("greeting").innerText = msg;
 
 // Time
@@ -143,10 +107,9 @@ function openPage(page){
   window.location.href = page;
 }
 
-// ✅ Print Receipt Function
+// Print Receipt
 function printReceipt(){
   let id = prompt("Enter Transaction ID");
-
   if(id){
     window.location.href = "receipt.html?id=" + id;
   }
