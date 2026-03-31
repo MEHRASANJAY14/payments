@@ -1,52 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>Payment System</title>
 
 <style>
 body {
   margin:0;
   font-family: Arial;
-  background: linear-gradient(to bottom, #0f2a5f, #3f63b5);
-  color:white;
-  text-align:center;
+  background:#f2f4f8;
 }
 
-/* HEADER */
+/* HEADER STRIP */
 .header {
-  padding:15px;
-}
-.header h2 {
-  margin:5px 0;
-  font-size:18px;
-}
-.sub {
-  font-size:12px;
-  opacity:0.9;
-}
-.time {
-  margin-top:5px;
-  font-size:13px;
+  position:fixed;
+  top:0;
+  width:100%;
+  background:#0f2a5f;
+  color:#fff;
+  padding:10px;
+  text-align:center;
+  z-index:1000;
 }
 
-/* GRID LAYOUT */
+.header h2 {
+  margin:0;
+  font-size:16px;
+}
+
+.sub {
+  font-size:11px;
+}
+
+.time {
+  font-size:12px;
+}
+
+/* CONTENT AREA */
 .container {
+  margin-top:80px;
+  margin-bottom:80px;
+  padding:10px;
   display:grid;
   grid-template-columns: repeat(2, 1fr);
   gap:12px;
-  padding:15px;
 }
 
-/* SMALL CARDS */
+/* CARDS */
 .card {
   background:#fff;
-  color:#333;
-  padding:15px;
+  padding:20px 10px;
   border-radius:15px;
-  box-shadow:0 5px 12px rgba(0,0,0,0.3);
+  text-align:center;
   font-size:14px;
   font-weight:bold;
+  box-shadow:0 4px 10px rgba(0,0,0,0.2);
   cursor:pointer;
   transition:0.2s;
 }
@@ -55,27 +63,32 @@ body {
   transform:scale(1.05);
 }
 
-/* FOOTER */
+/* FOOTER STRIP */
 .footer {
-  margin-top:10px;
-  padding:15px;
+  position:fixed;
+  bottom:0;
+  width:100%;
+  background:#0f2a5f;
+  color:#fff;
+  text-align:center;
+  padding:8px;
+  font-size:12px;
 }
 
 .btn {
   display:inline-block;
   background:#fff;
   color:#333;
-  padding:8px 15px;
-  margin:5px;
-  border-radius:15px;
+  padding:5px 12px;
+  margin:3px;
+  border-radius:10px;
   text-decoration:none;
-  font-size:13px;
+  font-size:11px;
 }
 
 .small-text {
-  font-size:11px;
-  opacity:0.7;
-  margin-top:8px;
+  font-size:10px;
+  opacity:0.8;
 }
 </style>
 </head>
@@ -85,13 +98,12 @@ body {
 <!-- HEADER -->
 <div class="header">
   <h2>💰 PAYMENT SYSTEM</h2>
-  <div class="sub">Smart Entry & Tracking</div>
-
+  <div class="sub">Smart Entry</div>
   <div id="greeting"></div>
   <div class="time" id="time"></div>
 </div>
 
-<!-- COMPACT GRID -->
+<!-- CONTENT -->
 <div class="container">
 
   <div class="card" onclick="openPage('customer.html')">
@@ -119,7 +131,7 @@ body {
   <a href="" onclick="location.reload()" class="btn">🔄 Refresh</a>
 
   <div class="small-text">
-    maintained and developed by sanjay mehra
+    Developed & maintained and developed by Sanjay mehra
   </div>
 
 </div>
@@ -127,14 +139,13 @@ body {
 <script>
 // Greeting
 const hour = new Date().getHours();
-let msg = hour < 12 ? "☀️ Good Morning" : hour < 18 ? "🌤️ Good Afternoon" : "🌙 Good Evening";
+let msg = hour < 12 ? "☀️ Morning" : hour < 18 ? "🌤️ Afternoon" : "🌙 Evening";
 document.getElementById("greeting").innerText = msg;
 
 // Time
 function updateTime(){
   const now = new Date();
-  document.getElementById("time").innerText =
-    now.toLocaleTimeString();
+  document.getElementById("time").innerText = now.toLocaleTimeString();
 }
 setInterval(updateTime,1000);
 updateTime();
@@ -144,7 +155,7 @@ function openPage(page){
   window.location.href = page;
 }
 
-// Print
+// Print Receipt
 function printReceipt(){
   let id = prompt("Enter Transaction ID");
   if(id){
