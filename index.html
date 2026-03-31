@@ -101,8 +101,9 @@ body {
     💸 Add Payment
   </div>
 
-  <div class="card" onclick="alert('Coming Soon')">
-    🔍 Search & Report
+  <!-- ✅ NEW PRINT RECEIPT -->
+  <div class="card" onclick="printReceipt()">
+    🧾 Print Receipt
   </div>
 
 </div>
@@ -140,6 +141,15 @@ updateTime();
 // Navigation
 function openPage(page){
   window.location.href = page;
+}
+
+// ✅ Print Receipt Function
+function printReceipt(){
+  let id = prompt("Enter Transaction ID");
+
+  if(id){
+    window.location.href = "receipt.html?id=" + id;
+  }
 }
 </script>
 
