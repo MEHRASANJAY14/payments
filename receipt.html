@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Print Receipt</title>
+  <style>
+    body { font-family: Arial; padding:20px; }
+    .box {
+      border:2px solid #000;
+      padding:20px;
+      max-width:400px;
+      margin:auto;
+    }
+    button {
+      margin-top:20px;
+      padding:10px;
+      width:100%;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2 align="center">🧾 Payment Receipt</h2>
+
+<div class="box" id="receipt">
+  Loading...
+</div>
+
+<button onclick="window.print()">🖨️ Print</button>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const txnId = params.get("id");
+
+fetch("https://opensheet.elk.sh/1imhirRNpRmDnxaTEANyCtcyr-IOt_PNXwVYUeDOWeBE/Payments")
+.then(res => res.json())
+.then(data => {
+  let row = data.find(r => r["Transaction ID"] === txnId);
+
+  if(!row){
+    document.getElementById("receipt").innerHTML = "❌ Record Not Found";
+    return;
+  }
+
+  document.getElementById("receipt").innerHTML = `
+    <h3>Payment Receipt</h3>
+    <p><b>ID:</b> ${row["Transaction ID"]}</p>
+    <p><b>Name:</b> ${row["Person Name"]}</p>
+    <p><b>Account:</b> ${row["Account No"]}</p>
+    <p><b>Amount:</b> ₹${row["Amount"]}</p>
+    <p><b>Mode:</b> ${row["Mode"]}</p>
+    <p><b>Date:</b> ${row["Date"]}</p>
+  `;
+});
+</script>
+
+</body>
+</html>
