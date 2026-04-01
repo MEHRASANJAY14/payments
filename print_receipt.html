@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Print Receipt</title>
+
+<style>
+body {
+  margin:0;
+  font-family:'Segoe UI', sans-serif;
+  background: linear-gradient(to bottom, #1c3c75, #3f63b5);
+  color:white;
+}
+
+/* HEADER */
+.header {
+  text-align:center;
+  padding:15px;
+}
+
+/* CARD */
+.container {
+  background:#fff;
+  color:#000;
+  margin:30px auto;
+  padding:25px;
+  width:90%;
+  max-width:400px;
+  border-radius:20px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.3);
+  text-align:center;
+}
+
+/* INPUT */
+input {
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+
+/* BUTTON */
+button {
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:12px;
+  background:#1c3c75;
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.back-btn {
+  background:#ccc;
+  color:#000;
+}
+
+/* FOOTER */
+.footer {
+  text-align:center;
+  margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h2>🧾 Print Receipt</h2>
+</div>
+
+<div class="container">
+
+  <h3>Enter Transaction ID</h3>
+
+  <input type="text" id="txnId" placeholder="Enter Transaction ID">
+
+  <button onclick="openReceipt()">Open Receipt</button>
+
+  <button class="back-btn" onclick="goHome()">⬅ Back to Home</button>
+
+</div>
+
+<script>
+function openReceipt(){
+  let id = document.getElementById("txnId").value.trim();
+
+  if(!id){
+    alert("⚠️ Enter Transaction ID");
+    return;
+  }
+
+  window.location.href = "receipt.html?id=" + id;
+}
+
+function goHome(){
+  window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>
