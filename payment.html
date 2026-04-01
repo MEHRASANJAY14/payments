@@ -9,135 +9,138 @@ body {
   margin:0;
   font-family:'Segoe UI', sans-serif;
   background: linear-gradient(to bottom, #1c3c75, #3f63b5);
-  color:white;
 }
 
-/* HEADER */
 .header {
   text-align:center;
+  color:#fff;
   padding:15px;
 }
 
-.header h2 {
-  margin:0;
-  font-size:18px;
-}
-
-/* FORM CARD */
 .container {
   background:#fff;
-  color:#333;
   margin:20px auto;
   padding:20px;
   width:90%;
-  max-width:400px;
+  max-width:420px;
   border-radius:20px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.3);
 }
+
+.form-grid {
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:12px;
+}
+
+.full { grid-column: span 2; }
 
 input, select {
   width:100%;
-  padding:10px;
-  margin:8px 0;
+  padding:12px;
   border-radius:10px;
   border:1px solid #ccc;
-  font-size:14px;
 }
 
 button {
   width:100%;
   padding:12px;
-  margin-top:10px;
   border:none;
-  border-radius:10px;
+  border-radius:12px;
   background:#1c3c75;
   color:#fff;
-  font-size:16px;
-  font-weight:bold;
-  cursor:pointer;
 }
 
-button:hover {
-  background:#0f2a5f;
-}
-
-/* LOADING */
 .loading {
   display:none;
   text-align:center;
   margin-top:10px;
-  font-size:14px;
 }
 
-/* FOOTER */
-.footer {
-  text-align:center;
-  margin-top:20px;
-}
-
-.back {
+.success-box {
+  display:none;
+  background:#4CAF50;
   color:#fff;
-  text-decoration:none;
+  padding:10px;
+  border-radius:10px;
+  margin-bottom:10px;
+  text-align:center;
 }
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
 <div class="header">
   <h2>💸 Add Payment</h2>
 </div>
 
-<!-- FORM -->
 <div class="container">
 
-  <form id="form">
+  <div id="successBox" class="success-box"></div>
 
-    <input type="text" name="person_name" placeholder="Person Name" required>
+  <form id="form" class="form-grid">
 
-    <input type="text" name="account_no" placeholder="Account No">
+    <input type="text" name="person_name" placeholder="Person Name" class="full" required>
 
     <input type="number" name="amount" placeholder="Amount" required>
 
-    <select name="mode">
+    <select name="mode" required>
+      <option value="">Mode</option>
       <option>Cash</option>
       <option>UPI</option>
       <option>Bank</option>
       <option>Cheque</option>
     </select>
 
-    <select name="purpose">
-      <option>Office Expense</option>
-      <option>Personal</option>
-      <option>Travel</option>
+    <input type="text" name="purpose" placeholder="Purpose" class="full" required>
+
+    <select name="receiver_type" required>
+      <option value="">Receiver Type</option>
+      <option>Vendor</option>
+      <option>Employee</option>
+      <option>Self</option>
       <option>Other</option>
     </select>
 
-    <input type="text" name="remarks" placeholder="Remarks">
+    <input type="text" name="remarks" placeholder="Remarks (optional)">
 
-    <button type="submit">Save Payment</button>
+    <div class="full">
+      <button type="submit" id="btn">Save Payment</button>
+    </div>
 
-    <div class="loading" id="loading">Saving...</div>
+    <div class="loading full" id="loading">Saving...</div>
 
   </form>
 
 </div>
 
-<!-- FOOTER -->
-<div class="footer">
-  <a href="index.html" class="back">⬅ Back to Home</a>
-</div>
-
 <script>
 const API = "https://script.google.com/macros/s/AKfycbwVdZs7juFLr9FHL3cMxNZs2VhzVv5wegm4IvIsyZ0uI8qD08kfqBH95YXzTxRIRri_/exec";
 
-document.getElementById("form").addEventListener("submit", function(e){
+const form = document.getElementById("form");
+
+form.addEventListener("submit", function(e){
   e.preventDefault();
 
-  document.getElementById("loading").style.display = "block";
+  let valid = true;
 
-  let data = Object.fromEntries(new FormData(this).entries());
+  form.querySelectorAll("input, select").forEach(el => {
+    el.style.border = "1px solid #ccc";
+    if(el.hasAttribute("required") && !el.value.trim()){
+      el.style.border = "2px solid red";
+      valid = false;
+    }
+  });
+
+  if(!valid){
+    alert("⚠️ Fill all required fields");
+    return;
+  }
+
+  document.getElementById("loading").style.display = "block";
+  document.getElementById("btn").innerText = "Saving...";
+
+  let data = Object.fromEntries(new FormData(form).entries());
 
   fetch(API, {
     method: "POST",
@@ -146,24 +149,23 @@ document.getElementById("form").addEventListener("submit", function(e){
   .then(res => res.text())
   .then(res => {
     document.getElementById("loading").style.display = "none";
+    document.getElementById("btn").innerText = "Save Payment";
 
-    try {
-      let result = JSON.parse(res);
+    let result = JSON.parse(res);
 
-      alert("✅ Payment Saved\nTxn ID: " + result.txn);
+    let box = document.getElementById("successBox");
+    box.style.display = "block";
+    box.innerHTML = "✅ Saved<br>Txn ID: <b>" + result.txn + "</b>";
 
-      // Redirect to receipt
+    // Delay for receipt fix
+    setTimeout(() => {
       window.location.href = "receipt.html?id=" + result.txn;
+    }, 4000);
 
-    } catch(err) {
-      alert("Saved but response issue ⚠️");
-    }
-
-    document.getElementById("form").reset();
+    form.reset();
   })
   .catch(err => {
-    document.getElementById("loading").style.display = "none";
-    alert("❌ Error: " + err);
+    alert("Error: " + err);
   });
 });
 </script>
