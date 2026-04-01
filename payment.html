@@ -24,27 +24,32 @@ body {
   margin:20px auto;
   padding:20px;
   width:90%;
-  max-width:420px;
+  max-width:500px;
   border-radius:20px;
   box-shadow:0 10px 25px rgba(0,0,0,0.3);
 }
 
-/* GRID */
-.form-grid {
-  display:grid;
-  grid-template-columns: 1fr 1fr;
-  gap:12px;
+/* FORM ROW */
+.form-row {
+  display:flex;
+  align-items:center;
+  margin-bottom:12px;
 }
 
-.full { grid-column: span 2; }
+/* LABEL */
+.form-row label {
+  width:40%;
+  font-weight:bold;
+  font-size:14px;
+}
 
 /* INPUT */
-input, select {
-  width:100%;
-  padding:12px;
-  border-radius:10px;
+.form-row input,
+.form-row select {
+  width:60%;
+  padding:10px;
+  border-radius:8px;
   border:1px solid #ccc;
-  font-size:14px;
 }
 
 /* ERROR */
@@ -60,6 +65,7 @@ input, select {
   border-radius:12px;
   font-weight:bold;
   cursor:pointer;
+  margin-top:10px;
 }
 
 .save-btn {
@@ -67,17 +73,8 @@ input, select {
   color:#fff;
 }
 
-.save-btn:hover {
-  background:#0f2a5f;
-}
-
 .back-btn {
   background:#ccc;
-  color:#000;
-}
-
-.back-btn:hover {
-  background:#aaa;
 }
 
 /* SUCCESS */
@@ -91,12 +88,22 @@ input, select {
   text-align:center;
 }
 
-/* LOADING */
-.loading {
-  display:none;
-  text-align:center;
-  margin-top:10px;
-  color:#1c3c75;
+/* MOBILE */
+@media(max-width:500px){
+  .form-row {
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .form-row label {
+    width:100%;
+    margin-bottom:5px;
+  }
+
+  .form-row input,
+  .form-row select {
+    width:100%;
+  }
 }
 </style>
 </head>
@@ -111,46 +118,57 @@ input, select {
 
   <div id="successBox" class="success-box"></div>
 
-  <form id="form" class="form-grid">
+  <form id="form">
 
-    <!-- PAYMENT DATE -->
-    <input type="date" name="payment_date" id="payment_date" class="full" required>
-
-    <input type="text" name="person_name" placeholder="Person Name" class="full" required>
-
-    <input type="number" name="amount" placeholder="Amount" required>
-
-    <select name="mode" required>
-      <option value="">Mode</option>
-      <option>Cash</option>
-      <option>UPI</option>
-      <option>Bank</option>
-      <option>Cheque</option>
-    </select>
-
-    <input type="text" name="purpose" placeholder="Purpose" class="full" required>
-
-    <select name="receiver_type" required>
-      <option value="">Receiver Type</option>
-      <option>Vendor</option>
-      <option>Employee</option>
-      <option>Self</option>
-      <option>Other</option>
-    </select>
-
-    <input type="text" name="remarks" placeholder="Remarks (optional)">
-
-    <!-- SAVE -->
-    <div class="full">
-      <button type="submit" class="btn save-btn" id="btn">Save Payment</button>
+    <div class="form-row">
+      <label>Payment Date</label>
+      <input type="date" name="payment_date" id="payment_date" required>
     </div>
 
-    <!-- BACK -->
-    <div class="full">
-      <button type="button" class="btn back-btn" onclick="goHome()">⬅ Back to Home</button>
+    <div class="form-row">
+      <label>Person Name</label>
+      <input type="text" name="person_name" required>
     </div>
 
-    <div class="loading full" id="loading">Saving...</div>
+    <div class="form-row">
+      <label>Amount</label>
+      <input type="number" name="amount" required>
+    </div>
+
+    <div class="form-row">
+      <label>Mode</label>
+      <select name="mode" required>
+        <option value="">Select</option>
+        <option>Cash</option>
+        <option>UPI</option>
+        <option>Bank</option>
+        <option>Cheque</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label>Purpose</label>
+      <input type="text" name="purpose" required>
+    </div>
+
+    <div class="form-row">
+      <label>Receiver Type</label>
+      <select name="receiver_type" required>
+        <option value="">Select</option>
+        <option>Vendor</option>
+        <option>Employee</option>
+        <option>Self</option>
+        <option>Other</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label>Remarks</label>
+      <input type="text" name="remarks">
+    </div>
+
+    <button type="submit" class="btn save-btn" id="btn">Save Payment</button>
+    <button type="button" class="btn back-btn" onclick="goHome()">⬅ Back</button>
 
   </form>
 
@@ -159,13 +177,13 @@ input, select {
 <script>
 const API = "https://script.google.com/macros/s/AKfycbwVdZs7juFLr9FHL3cMxNZs2VhzVv5wegm4IvIsyZ0uI8qD08kfqBH95YXzTxRIRri_/exec";
 
-// AUTO TODAY DATE
+// Auto date
 window.onload = function(){
   let today = new Date().toISOString().split('T')[0];
   document.getElementById("payment_date").value = today;
 };
 
-// BACK
+// Back
 function goHome(){
   window.location.href = "index.html";
 }
@@ -179,7 +197,6 @@ form.addEventListener("submit", function(e){
 
   form.querySelectorAll("input, select").forEach(el => {
     el.classList.remove("error");
-
     if(el.hasAttribute("required") && !el.value.trim()){
       el.classList.add("error");
       valid = false;
@@ -187,11 +204,10 @@ form.addEventListener("submit", function(e){
   });
 
   if(!valid){
-    alert("⚠️ Please fill all required fields");
+    alert("⚠️ Fill all required fields");
     return;
   }
 
-  document.getElementById("loading").style.display = "block";
   document.getElementById("btn").innerText = "Saving...";
 
   let data = Object.fromEntries(new FormData(form).entries());
@@ -202,14 +218,13 @@ form.addEventListener("submit", function(e){
   })
   .then(res => res.text())
   .then(res => {
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("btn").innerText = "Save Payment";
-
     let result = JSON.parse(res);
 
-    let box = document.getElementById("successBox");
-    box.style.display = "block";
-    box.innerHTML = "✅ Payment Saved<br>Txn ID: <b>" + result.txn + "</b>";
+    document.getElementById("successBox").style.display = "block";
+    document.getElementById("successBox").innerHTML =
+      "✅ Saved<br>Txn ID: <b>" + result.txn + "</b>";
+
+    document.getElementById("btn").innerText = "Save Payment";
 
     setTimeout(() => {
       window.location.href = "receipt.html?id=" + result.txn;
@@ -217,14 +232,8 @@ form.addEventListener("submit", function(e){
 
     form.reset();
 
-    // reset date again
     let today = new Date().toISOString().split('T')[0];
     document.getElementById("payment_date").value = today;
-  })
-  .catch(err => {
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("btn").innerText = "Save Payment";
-    alert("❌ Error: " + err);
   });
 });
 </script>
