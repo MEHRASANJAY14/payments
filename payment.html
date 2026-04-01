@@ -113,6 +113,9 @@ input, select {
 
   <form id="form" class="form-grid">
 
+    <!-- PAYMENT DATE -->
+    <input type="date" name="payment_date" id="payment_date" class="full" required>
+
     <input type="text" name="person_name" placeholder="Person Name" class="full" required>
 
     <input type="number" name="amount" placeholder="Amount" required>
@@ -137,12 +140,12 @@ input, select {
 
     <input type="text" name="remarks" placeholder="Remarks (optional)">
 
-    <!-- SAVE BUTTON -->
+    <!-- SAVE -->
     <div class="full">
       <button type="submit" class="btn save-btn" id="btn">Save Payment</button>
     </div>
 
-    <!-- BACK BUTTON BELOW -->
+    <!-- BACK -->
     <div class="full">
       <button type="button" class="btn back-btn" onclick="goHome()">⬅ Back to Home</button>
     </div>
@@ -156,6 +159,13 @@ input, select {
 <script>
 const API = "https://script.google.com/macros/s/AKfycbwVdZs7juFLr9FHL3cMxNZs2VhzVv5wegm4IvIsyZ0uI8qD08kfqBH95YXzTxRIRri_/exec";
 
+// AUTO TODAY DATE
+window.onload = function(){
+  let today = new Date().toISOString().split('T')[0];
+  document.getElementById("payment_date").value = today;
+};
+
+// BACK
 function goHome(){
   window.location.href = "index.html";
 }
@@ -206,8 +216,14 @@ form.addEventListener("submit", function(e){
     }, 4000);
 
     form.reset();
+
+    // reset date again
+    let today = new Date().toISOString().split('T')[0];
+    document.getElementById("payment_date").value = today;
   })
   .catch(err => {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("btn").innerText = "Save Payment";
     alert("❌ Error: " + err);
   });
 });
