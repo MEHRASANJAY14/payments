@@ -8,53 +8,90 @@
 body {
   margin:0;
   font-family:'Segoe UI', sans-serif;
-  background: linear-gradient(to bottom, #1c3c75, #3f63b5);
-  color:white;
+  background: linear-gradient(-45deg, #1c3c75, #3f63b5, #00c6ff);
+  background-size: 400% 400%;
+  animation: gradient 8s ease infinite;
+}
+
+/* BACKGROUND ANIMATION */
+@keyframes gradient {
+  0%{background-position:0%}
+  50%{background-position:100%}
+  100%{background-position:0%}
 }
 
 /* HEADER */
 .header {
   text-align:center;
+  color:#fff;
   padding:15px;
 }
 
-.header h2 {
-  margin:0;
-  font-size:18px;
-}
-
-/* FORM CARD */
+/* CARD */
 .container {
-  background:#fff;
-  color:#333;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(15px);
   margin:20px auto;
   padding:20px;
   width:90%;
   max-width:400px;
   border-radius:20px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.3);
+  box-shadow:0 10px 30px rgba(0,0,0,0.3);
 }
 
-input, select {
+/* FLOATING INPUT */
+.input-box {
+  position:relative;
+  margin:15px 0;
+}
+
+.input-box input, .input-box select {
   width:100%;
-  padding:10px;
-  margin:8px 0;
+  padding:12px;
+  border:none;
   border-radius:10px;
-  border:1px solid #ccc;
+  outline:none;
   font-size:14px;
 }
 
+.input-box label {
+  position:absolute;
+  top:12px;
+  left:12px;
+  color:#555;
+  font-size:13px;
+  transition:0.3s;
+  pointer-events:none;
+}
+
+.input-box input:focus + label,
+.input-box input:not(:placeholder-shown) + label {
+  top:-8px;
+  left:10px;
+  background:#fff;
+  padding:2px 5px;
+  font-size:11px;
+}
+
+/* AMOUNT STYLE */
+.amount {
+  font-size:18px;
+  font-weight:bold;
+  color:#1c3c75;
+}
+
+/* BUTTON */
 button {
   width:100%;
   padding:12px;
-  margin-top:10px;
   border:none;
-  border-radius:10px;
+  border-radius:12px;
   background:#1c3c75;
   color:#fff;
   font-size:16px;
   font-weight:bold;
   cursor:pointer;
+  transition:0.3s;
 }
 
 button:hover {
@@ -66,20 +103,18 @@ button:hover {
   display:none;
   text-align:center;
   margin-top:10px;
-  font-size:14px;
-  color:#1c3c75;
+  color:#fff;
 }
 
 /* FOOTER */
 .footer {
   text-align:center;
-  margin-top:20px;
+  margin-top:15px;
 }
 
-.back {
+.footer a {
   color:#fff;
   text-decoration:none;
-  font-size:14px;
 }
 </style>
 </head>
@@ -96,22 +131,36 @@ button:hover {
 
   <form id="form">
 
-    <input type="text" name="person_name" placeholder="Person Name" required>
+    <div class="input-box">
+      <input type="text" name="person_name" required placeholder=" ">
+      <label>Person Name</label>
+    </div>
 
-    <input type="number" name="amount" placeholder="Amount" required>
+    <div class="input-box">
+      <input type="number" name="amount" required placeholder=" " id="amount">
+      <label>Amount</label>
+    </div>
 
-    <select name="mode">
-      <option>Cash</option>
-      <option>UPI</option>
-      <option>Bank</option>
-      <option>Cheque</option>
-    </select>
+    <div class="input-box">
+      <select name="mode">
+        <option>Cash</option>
+        <option>UPI</option>
+        <option>Bank</option>
+        <option>Cheque</option>
+      </select>
+    </div>
 
-    <input type="text" name="purpose" placeholder="Purpose" required>
+    <div class="input-box">
+      <input type="text" name="purpose" required placeholder=" ">
+      <label>Purpose</label>
+    </div>
 
-    <input type="text" name="remarks" placeholder="Remarks">
+    <div class="input-box">
+      <input type="text" name="remarks" placeholder=" ">
+      <label>Remarks</label>
+    </div>
 
-    <button type="submit">Save Payment</button>
+    <button type="submit" id="btn">Save Payment</button>
 
     <div class="loading" id="loading">Saving...</div>
 
@@ -121,16 +170,23 @@ button:hover {
 
 <!-- FOOTER -->
 <div class="footer">
-  <a href="index.html" class="back">⬅ Back to Home</a>
+  <a href="index.html">⬅ Back to Home</a>
 </div>
 
 <script>
 const API = "https://script.google.com/macros/s/AKfycbwVdZs7juFLr9FHL3cMxNZs2VhzVv5wegm4IvIsyZ0uI8qD08kfqBH95YXzTxRIRri_/exec";
 
+// Live amount highlight
+document.getElementById("amount").addEventListener("input", function(){
+  this.style.border = "2px solid #1c3c75";
+});
+
+// Submit
 document.getElementById("form").addEventListener("submit", function(e){
   e.preventDefault();
 
   document.getElementById("loading").style.display = "block";
+  document.getElementById("btn").innerText = "Saving...";
 
   let data = Object.fromEntries(new FormData(this).entries());
 
@@ -141,24 +197,22 @@ document.getElementById("form").addEventListener("submit", function(e){
   .then(res => res.text())
   .then(res => {
     document.getElementById("loading").style.display = "none";
+    document.getElementById("btn").innerText = "Save Payment";
 
     try {
       let result = JSON.parse(res);
-
-      alert("✅ Payment Saved\nTxn ID: " + result.txn);
-
-      // Redirect to receipt
+      alert("✅ Saved\nTxn ID: " + result.txn);
       window.location.href = "receipt.html?id=" + result.txn;
-
-    } catch(err) {
-      alert("Saved but response issue ⚠️");
+    } catch {
+      alert("Saved but response issue");
     }
 
     document.getElementById("form").reset();
   })
   .catch(err => {
     document.getElementById("loading").style.display = "none";
-    alert("❌ Error: " + err);
+    document.getElementById("btn").innerText = "Save Payment";
+    alert("Error: " + err);
   });
 });
 </script>
