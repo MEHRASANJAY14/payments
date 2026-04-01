@@ -63,6 +63,7 @@ body {
   font-weight:bold;
   text-align:center;
   box-shadow:0 8px 20px rgba(0,0,0,0.3);
+  cursor:pointer;
 }
 
 .card:hover {
@@ -74,7 +75,7 @@ body {
   margin-bottom:8px;
 }
 
-/* INPUT INSIDE CARD */
+/* INPUT BOX */
 .input-box {
   margin-top:10px;
 }
@@ -149,15 +150,15 @@ body {
     Add Payment
   </div>
 
-  <!-- PRINT RECEIPT (UPDATED ONLY THIS PART) -->
-  <div class="card">
+  <!-- PRINT RECEIPT (UPDATED) -->
+  <div class="card" onclick="toggleReceiptBox()">
     <div class="icon">🧾</div>
     Print Receipt
 
-    <div class="input-box">
+    <div id="receiptBox" class="input-box" style="display:none;">
       <input type="text" id="txnId" placeholder="Enter Transaction ID">
 
-      <button onclick="openReceipt()">Open Receipt</button>
+      <button onclick="openReceipt(event)">Open Receipt</button>
     </div>
   </div>
 
@@ -171,11 +172,18 @@ body {
 
 <!-- FOOTER -->
 <div class="footer">
+
   <a href="index.html" class="btn">🏠 Home</a>
   <a href="" onclick="location.reload()" class="btn">🔄 Refresh</a>
 
-  <div class="small">© 2026 Payment System</div>
-  <div class="small">Maintained and Developed by Sanjay Mehra</div>
+  <div class="small">
+    © 2026 Payment System
+  </div>
+
+  <div class="small">
+    Maintained and Developed by Sanjay Mehra
+  </div>
+
 </div>
 
 <script>
@@ -198,8 +206,21 @@ function openPage(p){
   window.location.href = p;
 }
 
-// NEW RECEIPT FUNCTION
-function openReceipt(){
+// Toggle receipt input
+function toggleReceiptBox(){
+  let box = document.getElementById("receiptBox");
+
+  if(box.style.display === "none"){
+    box.style.display = "block";
+  } else {
+    box.style.display = "none";
+  }
+}
+
+// Open receipt
+function openReceipt(event){
+  event.stopPropagation();
+
   let id = document.getElementById("txnId").value.trim();
 
   if(!id){
