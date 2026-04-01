@@ -7,7 +7,7 @@
 <style>
 body {
   font-family:'Segoe UI', sans-serif;
-  background:#f2f5f9;
+  background:#eef1f5;
   margin:0;
   padding:20px;
 }
@@ -17,8 +17,8 @@ body {
   max-width:420px;
   margin:auto;
   background:#fff;
-  border-radius:15px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+  border-radius:20px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.2);
   padding:20px;
 }
 
@@ -39,23 +39,24 @@ body {
 .row {
   display:flex;
   justify-content:space-between;
-  margin:8px 0;
-  font-size:14px;
+  margin:10px 0;
+  font-size:15px;
 }
 
 .label {
+  color:#666;
   font-weight:600;
-  color:#555;
 }
 
 .value {
   font-weight:bold;
+  color:#000;
 }
 
 /* AMOUNT */
 .amount {
-  font-size:18px;
   color:#007bff;
+  font-size:20px;
 }
 
 /* FOOTER */
@@ -71,16 +72,17 @@ body {
 /* BUTTON */
 .btn {
   width:100%;
-  padding:12px;
+  padding:14px;
   border:none;
-  border-radius:10px;
+  border-radius:12px;
   margin-top:15px;
   font-weight:bold;
   cursor:pointer;
+  font-size:16px;
 }
 
 .print-btn {
-  background:#1c3c75;
+  background:#27457a;
   color:#fff;
 }
 
@@ -133,6 +135,19 @@ function formatToday(){
 }
 document.getElementById("todayDate").innerText = formatToday();
 
+// FORMAT PAYMENT DATE
+function formatDate(value){
+  if(!value) return "-";
+
+  let d = new Date(value);
+
+  let day = String(d.getDate()).padStart(2,'0');
+  let month = d.toLocaleString('en-IN',{month:'short'});
+  let year = d.getFullYear();
+
+  return day + "-" + month + "-" + year;
+}
+
 // FETCH DATA
 fetch(API)
 .then(res => res.json())
@@ -145,7 +160,7 @@ fetch(API)
     return;
   }
 
-  // SAFE COLUMN FETCH (IMPORTANT FIX)
+  // SAFE COLUMN FETCH
   function getValue(key){
     let foundKey = Object.keys(row).find(k => k.trim() === key);
     return foundKey ? row[foundKey] : "-";
@@ -158,7 +173,7 @@ fetch(API)
     <div class="row"><span class="label">Mode</span><span class="value">${getValue("Mode")}</span></div>
     <div class="row"><span class="label">Purpose</span><span class="value">${getValue("Purpose")}</span></div>
     <div class="row"><span class="label">Receiver</span><span class="value">${getValue("Receiver Type")}</span></div>
-    <div class="row"><span class="label">Payment Date</span><span class="value">${getValue("Payment Date")}</span></div>
+    <div class="row"><span class="label">Payment Date</span><span class="value">${formatDate(getValue("Payment Date"))}</span></div>
     <div class="row"><span class="label">Status</span><span class="value">${getValue("Status")}</span></div>
   `;
 });
