@@ -8,38 +8,42 @@
 body {
   margin:0;
   font-family:'Segoe UI', sans-serif;
-  background: linear-gradient(to bottom, #1c3c75, #3f63b5);
+  background: linear-gradient(135deg, #1c3c75, #3f63b5, #00c6ff);
 }
 
 /* HEADER */
 .header {
   text-align:center;
   color:#fff;
-  padding:15px;
+  padding:18px;
+  font-size:18px;
+  font-weight:bold;
 }
 
 /* CARD */
 .container {
-  background:#fff;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(15px);
   margin:20px auto;
-  padding:20px;
-  width:90%;
-  max-width:500px;
+  padding:25px;
+  width:92%;
+  max-width:520px;
   border-radius:20px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.3);
+  box-shadow:0 10px 30px rgba(0,0,0,0.3);
 }
 
 /* FORM ROW */
 .form-row {
   display:flex;
   align-items:center;
-  margin-bottom:12px;
+  margin-bottom:14px;
 }
 
 /* LABEL */
 .form-row label {
   width:40%;
-  font-weight:bold;
+  font-weight:600;
+  color:#fff;
   font-size:14px;
 }
 
@@ -48,13 +52,18 @@ body {
 .form-row select {
   width:60%;
   padding:10px;
-  border-radius:8px;
-  border:1px solid #ccc;
+  border-radius:10px;
+  border:none;
+  outline:none;
+  font-size:14px;
+  transition:0.3s;
 }
 
-/* ERROR */
-.error {
-  border:2px solid red;
+/* FOCUS EFFECT */
+.form-row input:focus,
+.form-row select:focus {
+  box-shadow:0 0 5px #00c6ff;
+  transform:scale(1.02);
 }
 
 /* BUTTON */
@@ -65,24 +74,34 @@ body {
   border-radius:12px;
   font-weight:bold;
   cursor:pointer;
-  margin-top:10px;
+  margin-top:12px;
+  transition:0.3s;
 }
 
 .save-btn {
-  background:#1c3c75;
+  background:#00c6ff;
   color:#fff;
 }
 
+.save-btn:hover {
+  background:#009edc;
+  transform:scale(1.03);
+}
+
 .back-btn {
-  background:#ccc;
+  background:#ddd;
+}
+
+.back-btn:hover {
+  background:#bbb;
 }
 
 /* SUCCESS */
 .success-box {
   display:none;
-  background:#4CAF50;
+  background:#28a745;
   color:#fff;
-  padding:10px;
+  padding:12px;
   border-radius:10px;
   margin-bottom:10px;
   text-align:center;
@@ -110,9 +129,7 @@ body {
 
 <body>
 
-<div class="header">
-  <h2>💸 Add Payment</h2>
-</div>
+<div class="header">💸 Add Payment</div>
 
 <div class="container">
 
@@ -188,29 +205,13 @@ function goHome(){
   window.location.href = "index.html";
 }
 
-const form = document.getElementById("form");
-
-form.addEventListener("submit", function(e){
+// Submit
+document.getElementById("form").addEventListener("submit", function(e){
   e.preventDefault();
-
-  let valid = true;
-
-  form.querySelectorAll("input, select").forEach(el => {
-    el.classList.remove("error");
-    if(el.hasAttribute("required") && !el.value.trim()){
-      el.classList.add("error");
-      valid = false;
-    }
-  });
-
-  if(!valid){
-    alert("⚠️ Fill all required fields");
-    return;
-  }
 
   document.getElementById("btn").innerText = "Saving...";
 
-  let data = Object.fromEntries(new FormData(form).entries());
+  let data = Object.fromEntries(new FormData(this).entries());
 
   fetch(API, {
     method: "POST",
@@ -220,9 +221,9 @@ form.addEventListener("submit", function(e){
   .then(res => {
     let result = JSON.parse(res);
 
-    document.getElementById("successBox").style.display = "block";
-    document.getElementById("successBox").innerHTML =
-      "✅ Saved<br>Txn ID: <b>" + result.txn + "</b>";
+    let box = document.getElementById("successBox");
+    box.style.display = "block";
+    box.innerHTML = "✅ Saved<br>Txn ID: <b>" + result.txn + "</b>";
 
     document.getElementById("btn").innerText = "Save Payment";
 
@@ -230,7 +231,7 @@ form.addEventListener("submit", function(e){
       window.location.href = "receipt.html?id=" + result.txn;
     }, 4000);
 
-    form.reset();
+    document.getElementById("form").reset();
 
     let today = new Date().toISOString().split('T')[0];
     document.getElementById("payment_date").value = today;
