@@ -8,7 +8,7 @@
 body {
   margin:0;
   font-family:'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #1c3c75, #3f63b5, #00c6ff);
+  background: linear-gradient(135deg, #1c3c75, #3f63b5);
 }
 
 /* HEADER */
@@ -20,80 +20,63 @@ body {
   font-weight:bold;
 }
 
-/* CARD */
+/* CONTAINER */
 .container {
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(15px);
-  margin:20px auto;
-  padding:25px;
+  background:#ffffff15;
+  backdrop-filter: blur(12px);
+  margin:15px auto;
+  padding:20px;
   width:92%;
-  max-width:520px;
+  max-width:420px;
   border-radius:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.3);
+  box-shadow:0 8px 25px rgba(0,0,0,0.3);
 }
 
-/* FORM ROW */
-.form-row {
-  display:flex;
-  align-items:center;
-  margin-bottom:14px;
+/* FIELD */
+.field {
+  margin-bottom:15px;
 }
 
-/* LABEL */
-.form-row label {
-  width:40%;
-  font-weight:600;
+.field label {
+  display:block;
   color:#fff;
-  font-size:14px;
+  font-size:13px;
+  margin-bottom:5px;
 }
 
 /* INPUT */
-.form-row input,
-.form-row select {
-  width:60%;
-  padding:10px;
-  border-radius:10px;
+.field input,
+.field select {
+  width:100%;
+  padding:12px;
+  border-radius:12px;
   border:none;
   outline:none;
   font-size:14px;
-  transition:0.3s;
-}
-
-/* FOCUS EFFECT */
-.form-row input:focus,
-.form-row select:focus {
-  box-shadow:0 0 5px #00c6ff;
-  transform:scale(1.02);
+  background:#fff;
 }
 
 /* BUTTON */
 .btn {
   width:100%;
-  padding:12px;
+  padding:14px;
   border:none;
-  border-radius:12px;
+  border-radius:14px;
+  font-size:15px;
   font-weight:bold;
   cursor:pointer;
-  margin-top:12px;
-  transition:0.3s;
+  margin-top:10px;
 }
 
+/* SAVE */
 .save-btn {
-  background:#00c6ff;
+  background: linear-gradient(45deg,#00c6ff,#0072ff);
   color:#fff;
 }
 
-.save-btn:hover {
-  background:#009edc;
-  transform:scale(1.03);
-}
-
+/* BACK */
 .back-btn {
-  background:#ddd;
-}
-
-.back-btn:hover {
-  background:#bbb;
+  background:#eee;
 }
 
 /* SUCCESS */
@@ -101,28 +84,15 @@ body {
   display:none;
   background:#28a745;
   color:#fff;
-  padding:12px;
+  padding:10px;
   border-radius:10px;
   margin-bottom:10px;
   text-align:center;
 }
 
-/* MOBILE */
-@media(max-width:500px){
-  .form-row {
-    flex-direction:column;
-    align-items:flex-start;
-  }
-
-  .form-row label {
-    width:100%;
-    margin-bottom:5px;
-  }
-
-  .form-row input,
-  .form-row select {
-    width:100%;
-  }
+/* EXTRA SPACE (IMPORTANT FIX) */
+.bottom-space {
+  height:60px;
 }
 </style>
 </head>
@@ -137,22 +107,22 @@ body {
 
   <form id="form">
 
-    <div class="form-row">
+    <div class="field">
       <label>Payment Date</label>
       <input type="date" name="payment_date" id="payment_date" required>
     </div>
 
-    <div class="form-row">
+    <div class="field">
       <label>Person Name</label>
       <input type="text" name="person_name" required>
     </div>
 
-    <div class="form-row">
+    <div class="field">
       <label>Amount</label>
       <input type="number" name="amount" required>
     </div>
 
-    <div class="form-row">
+    <div class="field">
       <label>Mode</label>
       <select name="mode" required>
         <option value="">Select</option>
@@ -163,12 +133,12 @@ body {
       </select>
     </div>
 
-    <div class="form-row">
+    <div class="field">
       <label>Purpose</label>
       <input type="text" name="purpose" required>
     </div>
 
-    <div class="form-row">
+    <div class="field">
       <label>Receiver Type</label>
       <select name="receiver_type" required>
         <option value="">Select</option>
@@ -179,7 +149,7 @@ body {
       </select>
     </div>
 
-    <div class="form-row">
+    <div class="field">
       <label>Remarks</label>
       <input type="text" name="remarks">
     </div>
@@ -190,6 +160,9 @@ body {
   </form>
 
 </div>
+
+<!-- FIX FOR MOBILE CUT -->
+<div class="bottom-space"></div>
 
 <script>
 const API = "https://script.google.com/macros/s/AKfycbwVdZs7juFLr9FHL3cMxNZs2VhzVv5wegm4IvIsyZ0uI8qD08kfqBH95YXzTxRIRri_/exec";
