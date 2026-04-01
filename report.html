@@ -7,7 +7,7 @@
 <style>
 body {
   font-family:'Segoe UI', sans-serif;
-  background:#f2f5f9;
+  background:#eef1f5;
   padding:15px;
 }
 
@@ -21,12 +21,13 @@ input, button {
   padding:12px;
   margin:6px 0;
   width:100%;
-  border-radius:8px;
+  border-radius:10px;
   border:1px solid #ccc;
+  font-size:14px;
 }
 
 button {
-  background:#1c3c75;
+  background:#27457a;
   color:#fff;
   font-weight:bold;
 }
@@ -37,6 +38,8 @@ table {
   border-collapse: collapse;
   margin-top:15px;
   background:#fff;
+  border-radius:10px;
+  overflow:hidden;
 }
 
 th, td {
@@ -46,7 +49,7 @@ th, td {
 }
 
 th {
-  background:#1c3c75;
+  background:#27457a;
   color:#fff;
 }
 
@@ -55,6 +58,13 @@ th {
   font-weight:bold;
   text-align:right;
   font-size:16px;
+}
+
+.nodata {
+  text-align:center;
+  margin-top:20px;
+  font-weight:bold;
+  color:#777;
 }
 </style>
 </head>
@@ -77,7 +87,7 @@ th {
 <script>
 const API = "https://opensheet.elk.sh/1imhirRNpRmDnxaTEANyCtcyr-IOt_PNXwVYUeDOWeBE/Payments";
 
-// DATE PARSE FIX
+// DATE PARSE (dd/mm/yyyy fix)
 function parseDate(value){
   if(!value) return null;
 
@@ -93,7 +103,7 @@ function parseDate(value){
   return new Date(year, month, day);
 }
 
-// SAFE GET
+// SAFE VALUE GET
 function getValue(row, key){
   let foundKey = Object.keys(row).find(k => k.trim() === key);
   return foundKey ? row[foundKey] : "";
@@ -115,6 +125,11 @@ function loadReport(){
   let from = fromVal ? new Date(fromVal) : null;
   let to = toVal ? new Date(toVal) : null;
 
+  // ✅ FIX: include full day
+  if(to){
+    to.setHours(23,59,59,999);
+  }
+
   fetch(API)
   .then(res => res.json())
   .then(data => {
@@ -130,6 +145,7 @@ function loadReport(){
     `;
 
     let total = 0;
+    let count = 0;
 
     data.forEach(row => {
 
@@ -138,7 +154,7 @@ function loadReport(){
 
       if(!d) return;
 
-      // ✅ DATE FILTER FIX
+      // DATE FILTER
       if(from && to){
         if(d < from || d > to) return;
       }
@@ -152,6 +168,7 @@ function loadReport(){
       if(amountSearch && amt != amountSearch) return;
 
       total += amt;
+      count++;
 
       html += `
       <tr>
@@ -163,6 +180,13 @@ function loadReport(){
     });
 
     html += "</table>";
+
+    if(count === 0){
+      document.getElementById("result").innerHTML =
+        "<div class='nodata'>❌ No Data Found</div>";
+      return;
+    }
+
     html += `<div class="total">Total Amount: ₹${total}</div>`;
 
     document.getElementById("result").innerHTML = html;
