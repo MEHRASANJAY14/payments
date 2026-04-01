@@ -27,40 +27,36 @@ body {
   margin:15px auto;
   padding:20px;
   width:92%;
-  max-width:420px;
+  max-width:500px;
   border-radius:20px;
   box-shadow:0 8px 25px rgba(0,0,0,0.3);
 }
 
-/* FORM GRID */
-.form {
-  display:flex;
-  flex-direction:column;
-  gap:14px;
+/* ROW ALIGNMENT */
+.form-row {
+  display:grid;
+  grid-template-columns: 40% 60%;
+  align-items:center;
+  margin-bottom:14px;
+  gap:10px;
 }
 
-/* FIELD */
-.field {
-  display:flex;
-  flex-direction:column;
-}
-
-.field label {
+/* LABEL */
+.form-row label {
   color:#fff;
-  font-size:13px;
-  margin-bottom:4px;
+  font-size:14px;
+  font-weight:600;
 }
 
 /* INPUT */
-.field input,
-.field select {
+.form-row input,
+.form-row select {
   width:100%;
-  padding:12px;
-  border-radius:12px;
+  padding:11px;
+  border-radius:10px;
   border:none;
   outline:none;
   font-size:14px;
-  background:#fff;
 }
 
 /* BUTTON */
@@ -72,7 +68,7 @@ body {
   font-size:15px;
   font-weight:bold;
   cursor:pointer;
-  margin-top:5px;
+  margin-top:10px;
 }
 
 .save-btn {
@@ -93,6 +89,13 @@ body {
   border-radius:10px;
   text-align:center;
 }
+
+/* MOBILE FIX */
+@media(max-width:500px){
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 </head>
 
@@ -104,26 +107,24 @@ body {
 
   <div id="successBox" class="success-box"></div>
 
-  <form id="form" class="form">
+  <form id="form">
 
-    <!-- DISPLAY DATE -->
-    <div class="field">
+    <div class="form-row">
       <label>Payment Date</label>
-      <input type="text" id="display_date" readonly onclick="openPicker()">
-      <input type="date" id="payment_date" name="payment_date" style="display:none;">
+      <input type="date" name="payment_date" id="payment_date" required>
     </div>
 
-    <div class="field">
+    <div class="form-row">
       <label>Person Name</label>
       <input type="text" name="person_name" required>
     </div>
 
-    <div class="field">
+    <div class="form-row">
       <label>Amount</label>
       <input type="number" name="amount" required>
     </div>
 
-    <div class="field">
+    <div class="form-row">
       <label>Mode</label>
       <select name="mode" required>
         <option value="">Select</option>
@@ -134,12 +135,12 @@ body {
       </select>
     </div>
 
-    <div class="field">
+    <div class="form-row">
       <label>Purpose</label>
       <input type="text" name="purpose" required>
     </div>
 
-    <div class="field">
+    <div class="form-row">
       <label>Receiver Type</label>
       <select name="receiver_type" required>
         <option value="">Select</option>
@@ -150,7 +151,7 @@ body {
       </select>
     </div>
 
-    <div class="field">
+    <div class="form-row">
       <label>Remarks</label>
       <input type="text" name="remarks">
     </div>
@@ -165,40 +166,18 @@ body {
 <script>
 const API = "https://script.google.com/macros/s/AKfycbwVdZs7juFLr9FHL3cMxNZs2VhzVv5wegm4IvIsyZ0uI8qD08kfqBH95YXzTxRIRri_/exec";
 
-// FORMAT DATE → 01-Apr-2026
-function formatDate(d){
-  let date = new Date(d);
-  let day = String(date.getDate()).padStart(2,'0');
-  let month = date.toLocaleString('en-IN', { month: 'short' });
-  let year = date.getFullYear();
-  return `${day}-${month}-${year}`;
-}
-
-// AUTO SET TODAY
+// Auto date
 window.onload = function(){
-  let today = new Date();
-  let iso = today.toISOString().split('T')[0];
-
-  document.getElementById("payment_date").value = iso;
-  document.getElementById("display_date").value = formatDate(today);
+  let today = new Date().toISOString().split('T')[0];
+  document.getElementById("payment_date").value = today;
 };
 
-// OPEN DATE PICKER
-function openPicker(){
-  document.getElementById("payment_date").showPicker();
-}
-
-// UPDATE DISPLAY DATE
-document.getElementById("payment_date").addEventListener("change", function(){
-  document.getElementById("display_date").value = formatDate(this.value);
-});
-
-// BACK
+// Back
 function goHome(){
   window.location.href = "index.html";
 }
 
-// SUBMIT
+// Submit
 document.getElementById("form").addEventListener("submit", function(e){
   e.preventDefault();
 
@@ -214,9 +193,9 @@ document.getElementById("form").addEventListener("submit", function(e){
   .then(res => {
     let result = JSON.parse(res);
 
-    let box = document.getElementById("successBox");
-    box.style.display = "block";
-    box.innerHTML = "✅ Saved<br>Txn ID: <b>" + result.txn + "</b>";
+    document.getElementById("successBox").style.display = "block";
+    document.getElementById("successBox").innerHTML =
+      "✅ Saved<br>Txn ID: <b>" + result.txn + "</b>";
 
     document.getElementById("btn").innerText = "Save Payment";
 
@@ -224,7 +203,10 @@ document.getElementById("form").addEventListener("submit", function(e){
       window.location.href = "receipt.html?id=" + result.txn;
     }, 4000);
 
-    document.getElementById("form").reset();
+    this.reset();
+
+    let today = new Date().toISOString().split('T')[0];
+    document.getElementById("payment_date").value = today;
   });
 });
 </script>
