@@ -32,16 +32,23 @@ body {
   box-shadow:0 8px 25px rgba(0,0,0,0.3);
 }
 
+/* FORM GRID */
+.form {
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
 /* FIELD */
 .field {
-  margin-bottom:15px;
+  display:flex;
+  flex-direction:column;
 }
 
 .field label {
-  display:block;
   color:#fff;
   font-size:13px;
-  margin-bottom:5px;
+  margin-bottom:4px;
 }
 
 /* INPUT */
@@ -65,16 +72,14 @@ body {
   font-size:15px;
   font-weight:bold;
   cursor:pointer;
-  margin-top:10px;
+  margin-top:5px;
 }
 
-/* SAVE */
 .save-btn {
   background: linear-gradient(45deg,#00c6ff,#0072ff);
   color:#fff;
 }
 
-/* BACK */
 .back-btn {
   background:#eee;
 }
@@ -86,13 +91,7 @@ body {
   color:#fff;
   padding:10px;
   border-radius:10px;
-  margin-bottom:10px;
   text-align:center;
-}
-
-/* EXTRA SPACE (IMPORTANT FIX) */
-.bottom-space {
-  height:60px;
 }
 </style>
 </head>
@@ -105,11 +104,13 @@ body {
 
   <div id="successBox" class="success-box"></div>
 
-  <form id="form">
+  <form id="form" class="form">
 
+    <!-- DISPLAY DATE -->
     <div class="field">
       <label>Payment Date</label>
-      <input type="date" name="payment_date" id="payment_date" required>
+      <input type="text" id="display_date" readonly onclick="openPicker()">
+      <input type="date" id="payment_date" name="payment_date" style="display:none;">
     </div>
 
     <div class="field">
@@ -161,24 +162,43 @@ body {
 
 </div>
 
-<!-- FIX FOR MOBILE CUT -->
-<div class="bottom-space"></div>
-
 <script>
 const API = "https://script.google.com/macros/s/AKfycbwVdZs7juFLr9FHL3cMxNZs2VhzVv5wegm4IvIsyZ0uI8qD08kfqBH95YXzTxRIRri_/exec";
 
-// Auto date
+// FORMAT DATE → 01-Apr-2026
+function formatDate(d){
+  let date = new Date(d);
+  let day = String(date.getDate()).padStart(2,'0');
+  let month = date.toLocaleString('en-IN', { month: 'short' });
+  let year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+}
+
+// AUTO SET TODAY
 window.onload = function(){
-  let today = new Date().toISOString().split('T')[0];
-  document.getElementById("payment_date").value = today;
+  let today = new Date();
+  let iso = today.toISOString().split('T')[0];
+
+  document.getElementById("payment_date").value = iso;
+  document.getElementById("display_date").value = formatDate(today);
 };
 
-// Back
+// OPEN DATE PICKER
+function openPicker(){
+  document.getElementById("payment_date").showPicker();
+}
+
+// UPDATE DISPLAY DATE
+document.getElementById("payment_date").addEventListener("change", function(){
+  document.getElementById("display_date").value = formatDate(this.value);
+});
+
+// BACK
 function goHome(){
   window.location.href = "index.html";
 }
 
-// Submit
+// SUBMIT
 document.getElementById("form").addEventListener("submit", function(e){
   e.preventDefault();
 
@@ -205,9 +225,6 @@ document.getElementById("form").addEventListener("submit", function(e){
     }, 4000);
 
     document.getElementById("form").reset();
-
-    let today = new Date().toISOString().split('T')[0];
-    document.getElementById("payment_date").value = today;
   });
 });
 </script>
