@@ -75,31 +75,6 @@ body {
   margin-bottom:8px;
 }
 
-/* INPUT BOX */
-.input-box {
-  margin-top:10px;
-}
-
-.input-box input {
-  width:90%;
-  padding:8px;
-  border-radius:10px;
-  border:none;
-  margin-top:5px;
-}
-
-.input-box button {
-  width:90%;
-  padding:8px;
-  margin-top:8px;
-  border:none;
-  border-radius:10px;
-  background:#1c3c75;
-  color:#fff;
-  font-weight:bold;
-  cursor:pointer;
-}
-
 /* FOOTER FIXED */
 .footer {
   position:fixed;
@@ -151,15 +126,9 @@ body {
   </div>
 
   <!-- PRINT RECEIPT (UPDATED) -->
-  <div class="card" onclick="toggleReceiptBox()">
+  <div class="card" onclick="openPage('print_receipt.html')">
     <div class="icon">🧾</div>
     Print Receipt
-
-    <div id="receiptBox" class="input-box" style="display:none;">
-      <input type="text" id="txnId" placeholder="Enter Transaction ID">
-
-      <button onclick="openReceipt(event)">Open Receipt</button>
-    </div>
   </div>
 
   <!-- REPORT -->
@@ -204,31 +173,6 @@ updateTime();
 // Navigation
 function openPage(p){
   window.location.href = p;
-}
-
-// Toggle receipt input
-function toggleReceiptBox(){
-  let box = document.getElementById("receiptBox");
-
-  if(box.style.display === "none"){
-    box.style.display = "block";
-  } else {
-    box.style.display = "none";
-  }
-}
-
-// Open receipt
-function openReceipt(event){
-  event.stopPropagation();
-
-  let id = document.getElementById("txnId").value.trim();
-
-  if(!id){
-    alert("⚠️ Enter Transaction ID");
-    return;
-  }
-
-  window.location.href = "receipt.html?id=" + id;
 }
 </script>
 
