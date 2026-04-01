@@ -125,27 +125,32 @@ const txnId = params.get("id");
 
 const API = "https://opensheet.elk.sh/1imhirRNpRmDnxaTEANyCtcyr-IOt_PNXwVYUeDOWeBE/Payments";
 
-// TODAY DATE FORMAT
+// TODAY DATE
 function formatToday(){
   let d = new Date();
   let day = String(d.getDate()).padStart(2,'0');
   let month = d.toLocaleString('en-IN',{month:'short'});
   let year = d.getFullYear();
-  return day + "-" + month + "-" + year;
+  return `${day}-${month}-${year}`;
 }
 document.getElementById("todayDate").innerText = formatToday();
 
-// FORMAT PAYMENT DATE
+// ✅ FIXED DATE FORMAT (MAIN FIX)
 function formatDate(value){
   if(!value) return "-";
 
-  let d = new Date(value);
+  let clean = value.split(" ")[0]; // remove time if exists
+  let parts = clean.split(/[\/\-]/);
 
-  let day = String(d.getDate()).padStart(2,'0');
-  let month = d.toLocaleString('en-IN',{month:'short'});
-  let year = d.getFullYear();
+  if(parts.length < 3) return value;
 
-  return day + "-" + month + "-" + year;
+  let day = parts[0];
+  let month = parts[1];
+  let year = parts[2];
+
+  let monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  return `${day.padStart(2,'0')}-${monthNames[parseInt(month)-1]}-${year}`;
 }
 
 // FETCH DATA
@@ -160,7 +165,7 @@ fetch(API)
     return;
   }
 
-  // SAFE COLUMN FETCH
+  // SAFE KEY FETCH
   function getValue(key){
     let foundKey = Object.keys(row).find(k => k.trim() === key);
     return foundKey ? row[foundKey] : "-";
