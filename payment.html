@@ -22,41 +22,42 @@ body {
 
 /* CONTAINER */
 .container {
-  background:#ffffff15;
+  background: rgba(255,255,255,0.15);
   backdrop-filter: blur(12px);
-  margin:15px auto;
-  padding:20px;
+  margin:20px auto;
+  padding:25px 18px;
   width:92%;
   max-width:500px;
   border-radius:20px;
   box-shadow:0 8px 25px rgba(0,0,0,0.3);
 }
 
-/* ROW ALIGNMENT */
+/* ROW ALIGNMENT FIX */
 .form-row {
-  display:grid;
-  grid-template-columns: 40% 60%;
+  display:flex;
   align-items:center;
   margin-bottom:14px;
-  gap:10px;
 }
 
-/* LABEL */
+/* LABEL FIX */
 .form-row label {
+  width:140px;
+  min-width:140px;
   color:#fff;
   font-size:14px;
   font-weight:600;
 }
 
-/* INPUT */
+/* INPUT FIX */
 .form-row input,
 .form-row select {
-  width:100%;
-  padding:11px;
-  border-radius:10px;
+  flex:1;
+  padding:12px;
+  border-radius:12px;
   border:none;
   outline:none;
   font-size:14px;
+  background:#fff;
 }
 
 /* BUTTON */
@@ -93,7 +94,13 @@ body {
 /* MOBILE FIX */
 @media(max-width:500px){
   .form-row {
-    grid-template-columns: 1fr;
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .form-row label {
+    width:100%;
+    margin-bottom:5px;
   }
 }
 </style>
