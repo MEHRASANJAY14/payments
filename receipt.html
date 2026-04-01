@@ -12,7 +12,7 @@ body {
   padding:20px;
 }
 
-/* RECEIPT */
+/* CARD */
 .receipt {
   max-width:420px;
   margin:auto;
@@ -54,8 +54,8 @@ body {
 
 /* AMOUNT */
 .amount {
-  color:#007bff;
   font-size:18px;
+  color:#007bff;
 }
 
 /* FOOTER */
@@ -123,7 +123,7 @@ const txnId = params.get("id");
 
 const API = "https://opensheet.elk.sh/1imhirRNpRmDnxaTEANyCtcyr-IOt_PNXwVYUeDOWeBE/Payments";
 
-// Format today date
+// TODAY DATE FORMAT
 function formatToday(){
   let d = new Date();
   let day = String(d.getDate()).padStart(2,'0');
@@ -133,6 +133,7 @@ function formatToday(){
 }
 document.getElementById("todayDate").innerText = formatToday();
 
+// FETCH DATA
 fetch(API)
 .then(res => res.json())
 .then(data => {
@@ -144,19 +145,25 @@ fetch(API)
     return;
   }
 
+  // SAFE COLUMN FETCH (IMPORTANT FIX)
+  function getValue(key){
+    let foundKey = Object.keys(row).find(k => k.trim() === key);
+    return foundKey ? row[foundKey] : "-";
+  }
+
   document.getElementById("receipt").innerHTML = `
-    <div class="row"><span class="label">Txn ID</span><span class="value">${row["Transaction ID"]}</span></div>
-    <div class="row"><span class="label">Name</span><span class="value">${row["Person Name"]}</span></div>
-    <div class="row"><span class="label">Amount</span><span class="value amount">₹${row["Amount"]}</span></div>
-    <div class="row"><span class="label">Mode</span><span class="value">${row["Mode"]}</span></div>
-    <div class="row"><span class="label">Purpose</span><span class="value">${row["Purpose"]}</span></div>
-    <div class="row"><span class="label">Receiver</span><span class="value">${row["Receiver Type"]}</span></div>
-    <div class="row"><span class="label">Payment Date</span><span class="value">${row["Payment Date"] || "-"}</span></div>
-    <div class="row"><span class="label">Status</span><span class="value">${row["Status"]}</span></div>
+    <div class="row"><span class="label">Txn ID</span><span class="value">${getValue("Transaction ID")}</span></div>
+    <div class="row"><span class="label">Name</span><span class="value">${getValue("Person Name")}</span></div>
+    <div class="row"><span class="label">Amount</span><span class="value amount">₹${getValue("Amount")}</span></div>
+    <div class="row"><span class="label">Mode</span><span class="value">${getValue("Mode")}</span></div>
+    <div class="row"><span class="label">Purpose</span><span class="value">${getValue("Purpose")}</span></div>
+    <div class="row"><span class="label">Receiver</span><span class="value">${getValue("Receiver Type")}</span></div>
+    <div class="row"><span class="label">Payment Date</span><span class="value">${getValue("Payment Date")}</span></div>
+    <div class="row"><span class="label">Status</span><span class="value">${getValue("Status")}</span></div>
   `;
 });
 
-// Back
+// BACK
 function goHome(){
   window.location.href = "index.html";
 }
