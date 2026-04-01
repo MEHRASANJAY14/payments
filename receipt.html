@@ -12,7 +12,7 @@ body {
   padding:20px;
 }
 
-/* RECEIPT CARD */
+/* RECEIPT */
 .receipt {
   max-width:420px;
   margin:auto;
@@ -35,10 +35,6 @@ body {
   color:#1c3c75;
 }
 
-.header small {
-  color:#555;
-}
-
 /* ROW */
 .row {
   display:flex;
@@ -54,13 +50,12 @@ body {
 
 .value {
   font-weight:bold;
-  color:#000;
 }
 
-/* AMOUNT HIGHLIGHT */
+/* AMOUNT */
 .amount {
+  color:#007bff;
   font-size:18px;
-  color:#0a7cff;
 }
 
 /* FOOTER */
@@ -73,7 +68,7 @@ body {
   color:#666;
 }
 
-/* BUTTONS */
+/* BUTTON */
 .btn {
   width:100%;
   padding:12px;
@@ -93,41 +88,33 @@ body {
   background:#ddd;
 }
 
-/* PRINT STYLE */
+/* PRINT */
 @media print {
-  body {
-    background:#fff;
-  }
-
-  .btn {
-    display:none;
-  }
-
-  .receipt {
-    box-shadow:none;
-    border:none;
-  }
+  .btn { display:none; }
+  body { background:#fff; }
+  .receipt { box-shadow:none; }
 }
 </style>
 </head>
 
 <body>
 
-<div class="receipt" id="receiptBox">
+<div class="receipt">
+
   <div class="header">
     <h2>🧾 Payment Receipt</h2>
-    <small>Payment Management System</small>
   </div>
 
   <div id="receipt">Loading...</div>
 
   <div class="footer">
-    Thank you for your payment<br>
-    Maintained by Sanjay Mehra
+    This is system generated<br>
+    <span id="todayDate"></span>
   </div>
+
 </div>
 
-<button class="btn print-btn" onclick="window.print()">🖨️ Print Receipt</button>
+<button class="btn print-btn" onclick="window.print()">🖨️ Print</button>
 <button class="btn back-btn" onclick="goHome()">⬅ Back</button>
 
 <script>
@@ -135,6 +122,16 @@ const params = new URLSearchParams(window.location.search);
 const txnId = params.get("id");
 
 const API = "https://opensheet.elk.sh/1imhirRNpRmDnxaTEANyCtcyr-IOt_PNXwVYUeDOWeBE/Payments";
+
+// Format today date
+function formatToday(){
+  let d = new Date();
+  let day = String(d.getDate()).padStart(2,'0');
+  let month = d.toLocaleString('en-IN',{month:'short'});
+  let year = d.getFullYear();
+  return day + "-" + month + "-" + year;
+}
+document.getElementById("todayDate").innerText = formatToday();
 
 fetch(API)
 .then(res => res.json())
@@ -154,7 +151,7 @@ fetch(API)
     <div class="row"><span class="label">Mode</span><span class="value">${row["Mode"]}</span></div>
     <div class="row"><span class="label">Purpose</span><span class="value">${row["Purpose"]}</span></div>
     <div class="row"><span class="label">Receiver</span><span class="value">${row["Receiver Type"]}</span></div>
-    <div class="row"><span class="label">Date</span><span class="value">${row["Payment Date"]}</span></div>
+    <div class="row"><span class="label">Payment Date</span><span class="value">${row["Payment Date"] || "-"}</span></div>
     <div class="row"><span class="label">Status</span><span class="value">${row["Status"]}</span></div>
   `;
 });
