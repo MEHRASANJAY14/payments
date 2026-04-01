@@ -22,42 +22,39 @@ body {
 
 /* CONTAINER */
 .container {
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(12px);
+  background:#ffffff;
   margin:20px auto;
-  padding:25px 18px;
+  padding:20px;
   width:92%;
   max-width:500px;
-  border-radius:20px;
-  box-shadow:0 8px 25px rgba(0,0,0,0.3);
+  border-radius:15px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.2);
 }
 
-/* ROW ALIGNMENT FIX */
+/* FORM ROW */
 .form-row {
   display:flex;
   align-items:center;
   margin-bottom:14px;
 }
 
-/* LABEL FIX */
+/* LABEL */
 .form-row label {
-  width:140px;
-  min-width:140px;
-  color:#fff;
+  width:150px;
+  min-width:150px;
   font-size:14px;
   font-weight:600;
+  color:#333;
 }
 
-/* INPUT FIX */
+/* INPUT */
 .form-row input,
 .form-row select {
   flex:1;
   padding:12px;
-  border-radius:12px;
-  border:none;
-  outline:none;
+  border-radius:8px;
+  border:1px solid #ccc;
   font-size:14px;
-  background:#fff;
 }
 
 /* BUTTON */
@@ -65,7 +62,7 @@ body {
   width:100%;
   padding:14px;
   border:none;
-  border-radius:14px;
+  border-radius:10px;
   font-size:15px;
   font-weight:bold;
   cursor:pointer;
@@ -73,25 +70,15 @@ body {
 }
 
 .save-btn {
-  background: linear-gradient(45deg,#00c6ff,#0072ff);
+  background:#1c3c75;
   color:#fff;
 }
 
 .back-btn {
-  background:#eee;
+  background:#ddd;
 }
 
-/* SUCCESS */
-.success-box {
-  display:none;
-  background:#28a745;
-  color:#fff;
-  padding:10px;
-  border-radius:10px;
-  text-align:center;
-}
-
-/* MOBILE FIX */
+/* MOBILE */
 @media(max-width:500px){
   .form-row {
     flex-direction:column;
@@ -111,8 +98,6 @@ body {
 <div class="header">💸 Add Payment</div>
 
 <div class="container">
-
-  <div id="successBox" class="success-box"></div>
 
   <form id="form">
 
@@ -173,22 +158,23 @@ body {
 <script>
 const API = "https://script.google.com/macros/s/AKfycbwVdZs7juFLr9FHL3cMxNZs2VhzVv5wegm4IvIsyZ0uI8qD08kfqBH95YXzTxRIRri_/exec";
 
-// Auto date
+// AUTO TODAY DATE
 window.onload = function(){
   let today = new Date().toISOString().split('T')[0];
   document.getElementById("payment_date").value = today;
 };
 
-// Back
+// BACK BUTTON
 function goHome(){
   window.location.href = "index.html";
 }
 
-// Submit
+// FORM SUBMIT
 document.getElementById("form").addEventListener("submit", function(e){
   e.preventDefault();
 
-  document.getElementById("btn").innerText = "Saving...";
+  let btn = document.getElementById("btn");
+  btn.innerText = "Saving...";
 
   let data = Object.fromEntries(new FormData(this).entries());
 
@@ -200,20 +186,22 @@ document.getElementById("form").addEventListener("submit", function(e){
   .then(res => {
     let result = JSON.parse(res);
 
-    document.getElementById("successBox").style.display = "block";
-    document.getElementById("successBox").innerHTML =
-      "✅ Saved<br>Txn ID: <b>" + result.txn + "</b>";
-
-    document.getElementById("btn").innerText = "Save Payment";
+    alert("✅ Payment Saved\nTxn ID: " + result.txn);
 
     setTimeout(() => {
       window.location.href = "receipt.html?id=" + result.txn;
-    }, 4000);
+    }, 3000);
 
     this.reset();
 
     let today = new Date().toISOString().split('T')[0];
     document.getElementById("payment_date").value = today;
+
+    btn.innerText = "Save Payment";
+  })
+  .catch(err => {
+    alert("❌ Error: " + err);
+    btn.innerText = "Save Payment";
   });
 });
 </script>
