@@ -70,13 +70,14 @@ th {
 <input type="number" id="amountSearch" placeholder="Search by Amount">
 
 <button onclick="loadReport()">Generate Report</button>
+<button onclick="goHome()">⬅ Back</button>
 
 <div id="result"></div>
 
 <script>
 const API = "https://opensheet.elk.sh/1imhirRNpRmDnxaTEANyCtcyr-IOt_PNXwVYUeDOWeBE/Payments";
 
-// DATE PARSE
+// DATE PARSE FIX
 function parseDate(value){
   if(!value) return null;
 
@@ -98,6 +99,11 @@ function getValue(row, key){
   return foundKey ? row[foundKey] : "";
 }
 
+// BACK BUTTON
+function goHome(){
+  window.location.href = "index.html";
+}
+
 function loadReport(){
 
   let fromVal = document.getElementById("fromDate").value;
@@ -105,6 +111,9 @@ function loadReport(){
 
   let nameSearch = document.getElementById("nameSearch").value.toLowerCase();
   let amountSearch = document.getElementById("amountSearch").value;
+
+  let from = fromVal ? new Date(fromVal) : null;
+  let to = toVal ? new Date(toVal) : null;
 
   fetch(API)
   .then(res => res.json())
@@ -129,12 +138,9 @@ function loadReport(){
 
       if(!d) return;
 
-      // DATE FILTER
-      if(fromVal && toVal){
-        let from = new Date(fromVal);
-        let to = new Date(toVal);
-
-        if(!(d >= from && d <= to)) return;
+      // ✅ DATE FILTER FIX
+      if(from && to){
+        if(d < from || d > to) return;
       }
 
       // NAME FILTER
@@ -157,7 +163,6 @@ function loadReport(){
     });
 
     html += "</table>";
-
     html += `<div class="total">Total Amount: ₹${total}</div>`;
 
     document.getElementById("result").innerHTML = html;
