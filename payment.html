@@ -41,6 +41,7 @@ input, select {
   margin:8px 0;
   border-radius:10px;
   border:1px solid #ccc;
+  font-size:14px;
 }
 
 button {
@@ -53,10 +54,20 @@ button {
   color:#fff;
   font-size:16px;
   font-weight:bold;
+  cursor:pointer;
 }
 
 button:hover {
   background:#0f2a5f;
+}
+
+/* LOADING */
+.loading {
+  display:none;
+  text-align:center;
+  margin-top:10px;
+  font-size:14px;
+  color:#1c3c75;
 }
 
 /* FOOTER */
@@ -68,6 +79,7 @@ button:hover {
 .back {
   color:#fff;
   text-decoration:none;
+  font-size:14px;
 }
 </style>
 </head>
@@ -86,8 +98,6 @@ button:hover {
 
     <input type="text" name="person_name" placeholder="Person Name" required>
 
-    <input type="text" name="account_no" placeholder="Account No">
-
     <input type="number" name="amount" placeholder="Amount" required>
 
     <select name="mode">
@@ -97,16 +107,13 @@ button:hover {
       <option>Cheque</option>
     </select>
 
-    <select name="purpose">
-      <option>Office Expense</option>
-      <option>Personal</option>
-      <option>Travel</option>
-      <option>Other</option>
-    </select>
+    <input type="text" name="purpose" placeholder="Purpose" required>
 
     <input type="text" name="remarks" placeholder="Remarks">
 
     <button type="submit">Save Payment</button>
+
+    <div class="loading" id="loading">Saving...</div>
 
   </form>
 
@@ -123,18 +130,35 @@ const API = "https://script.google.com/macros/s/AKfycbwVdZs7juFLr9FHL3cMxNZs2Vhz
 document.getElementById("form").addEventListener("submit", function(e){
   e.preventDefault();
 
+  document.getElementById("loading").style.display = "block";
+
   let data = Object.fromEntries(new FormData(this).entries());
 
   fetch(API, {
     method: "POST",
     body: JSON.stringify(data)
   })
-  .then(res => res.json())
+  .then(res => res.text())
   .then(res => {
-    alert("✅ Payment Saved\nTxn ID: " + res.txn);
+    document.getElementById("loading").style.display = "none";
 
-    // redirect to receipt
-    window.location.href = "receipt.html?id=" + res.txn;
+    try {
+      let result = JSON.parse(res);
+
+      alert("✅ Payment Saved\nTxn ID: " + result.txn);
+
+      // Redirect to receipt
+      window.location.href = "receipt.html?id=" + result.txn;
+
+    } catch(err) {
+      alert("Saved but response issue ⚠️");
+    }
+
+    document.getElementById("form").reset();
+  })
+  .catch(err => {
+    document.getElementById("loading").style.display = "none";
+    alert("❌ Error: " + err);
   });
 });
 </script>
