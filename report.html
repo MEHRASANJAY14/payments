@@ -1,38 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Report</title>
+<title>Payment Report</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body { font-family: Arial; padding:20px; }
-
-input, button {
-  padding:10px;
-  margin:5px;
-  width:100%;
+body {
+  font-family:'Segoe UI', sans-serif;
+  background:#f2f5f9;
+  padding:15px;
 }
 
+h2 {
+  text-align:center;
+  color:#1c3c75;
+}
+
+/* INPUT */
+input, button {
+  padding:12px;
+  margin:6px 0;
+  width:100%;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
+button {
+  background:#1c3c75;
+  color:#fff;
+  font-weight:bold;
+}
+
+/* TABLE */
 table {
   width:100%;
   border-collapse: collapse;
-  margin-top:20px;
+  margin-top:15px;
+  background:#fff;
 }
 
 th, td {
-  border:1px solid #ccc;
-  padding:8px;
+  padding:10px;
+  border-bottom:1px solid #ddd;
   text-align:center;
 }
 
 th {
-  background:#007bff;
+  background:#1c3c75;
   color:#fff;
 }
 
 .total {
+  margin-top:10px;
   font-weight:bold;
-  margin-top:15px;
+  text-align:right;
+  font-size:16px;
 }
 </style>
 </head>
@@ -44,6 +66,9 @@ th {
 <input type="date" id="fromDate">
 <input type="date" id="toDate">
 
+<input type="text" id="nameSearch" placeholder="Search by Name">
+<input type="number" id="amountSearch" placeholder="Search by Amount">
+
 <button onclick="loadReport()">Generate Report</button>
 
 <div id="result"></div>
@@ -51,33 +76,88 @@ th {
 <script>
 const API = "https://opensheet.elk.sh/1imhirRNpRmDnxaTEANyCtcyr-IOt_PNXwVYUeDOWeBE/Payments";
 
+// DATE PARSE
+function parseDate(value){
+  if(!value) return null;
+
+  let clean = value.split(" ")[0];
+  let parts = clean.split(/[\/\-]/);
+
+  if(parts.length < 3) return null;
+
+  let day = parseInt(parts[0]);
+  let month = parseInt(parts[1]) - 1;
+  let year = parseInt(parts[2]);
+
+  return new Date(year, month, day);
+}
+
+// SAFE GET
+function getValue(row, key){
+  let foundKey = Object.keys(row).find(k => k.trim() === key);
+  return foundKey ? row[foundKey] : "";
+}
+
 function loadReport(){
-  let from = new Date(document.getElementById("fromDate").value);
-  let to = new Date(document.getElementById("toDate").value);
+
+  let fromVal = document.getElementById("fromDate").value;
+  let toVal = document.getElementById("toDate").value;
+
+  let nameSearch = document.getElementById("nameSearch").value.toLowerCase();
+  let amountSearch = document.getElementById("amountSearch").value;
 
   fetch(API)
   .then(res => res.json())
   .then(data => {
 
-    let html = "<table><tr><th>Date</th><th>Name</th><th>Amount</th><th>Mode</th></tr>";
+    let html = `
+      <table>
+        <tr>
+          <th>Date</th>
+          <th>Name</th>
+          <th>Amount</th>
+          <th>Mode</th>
+        </tr>
+    `;
+
     let total = 0;
 
     data.forEach(row => {
-      let d = new Date(row["Date"]);
 
-      if(d >= from && d <= to){
-        total += Number(row["Amount"]);
+      let dateStr = getValue(row, "Payment Date");
+      let d = parseDate(dateStr);
 
-        html += `<tr>
-          <td>${row["Date"]}</td>
-          <td>${row["Person Name"]}</td>
-          <td>₹${row["Amount"]}</td>
-          <td>${row["Mode"]}</td>
-        </tr>`;
+      if(!d) return;
+
+      // DATE FILTER
+      if(fromVal && toVal){
+        let from = new Date(fromVal);
+        let to = new Date(toVal);
+
+        if(!(d >= from && d <= to)) return;
       }
+
+      // NAME FILTER
+      let name = getValue(row,"Person Name").toLowerCase();
+      if(nameSearch && !name.includes(nameSearch)) return;
+
+      // AMOUNT FILTER
+      let amt = Number(getValue(row,"Amount")) || 0;
+      if(amountSearch && amt != amountSearch) return;
+
+      total += amt;
+
+      html += `
+      <tr>
+        <td>${dateStr}</td>
+        <td>${getValue(row,"Person Name")}</td>
+        <td>₹${amt}</td>
+        <td>${getValue(row,"Mode")}</td>
+      </tr>`;
     });
 
     html += "</table>";
+
     html += `<div class="total">Total Amount: ₹${total}</div>`;
 
     document.getElementById("result").innerHTML = html;
