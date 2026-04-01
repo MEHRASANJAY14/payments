@@ -11,12 +11,29 @@ body {
   background: linear-gradient(to bottom, #1c3c75, #3f63b5);
 }
 
+/* HEADER */
 .header {
+  position:relative;
   text-align:center;
   color:#fff;
   padding:15px;
 }
 
+/* BACK BUTTON */
+.back-btn {
+  position:absolute;
+  left:10px;
+  top:15px;
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  background:#fff;
+  color:#1c3c75;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* CARD */
 .container {
   background:#fff;
   margin:20px auto;
@@ -24,8 +41,10 @@ body {
   width:90%;
   max-width:420px;
   border-radius:20px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.3);
 }
 
+/* GRID */
 .form-grid {
   display:grid;
   grid-template-columns: 1fr 1fr;
@@ -34,28 +53,37 @@ body {
 
 .full { grid-column: span 2; }
 
+/* INPUT */
 input, select {
   width:100%;
   padding:12px;
   border-radius:10px;
   border:1px solid #ccc;
+  font-size:14px;
 }
 
-button {
+/* ERROR */
+.error {
+  border:2px solid red;
+}
+
+/* BUTTON */
+button.submit-btn {
   width:100%;
   padding:12px;
   border:none;
   border-radius:12px;
   background:#1c3c75;
   color:#fff;
+  font-weight:bold;
+  cursor:pointer;
 }
 
-.loading {
-  display:none;
-  text-align:center;
-  margin-top:10px;
+button.submit-btn:hover {
+  background:#0f2a5f;
 }
 
+/* SUCCESS BOX */
 .success-box {
   display:none;
   background:#4CAF50;
@@ -65,12 +93,21 @@ button {
   margin-bottom:10px;
   text-align:center;
 }
+
+/* LOADING */
+.loading {
+  display:none;
+  text-align:center;
+  margin-top:10px;
+  color:#1c3c75;
+}
 </style>
 </head>
 
 <body>
 
 <div class="header">
+  <button class="back-btn" onclick="goHome()">⬅ Back</button>
   <h2>💸 Add Payment</h2>
 </div>
 
@@ -105,7 +142,7 @@ button {
     <input type="text" name="remarks" placeholder="Remarks (optional)">
 
     <div class="full">
-      <button type="submit" id="btn">Save Payment</button>
+      <button type="submit" class="submit-btn" id="btn">Save Payment</button>
     </div>
 
     <div class="loading full" id="loading">Saving...</div>
@@ -117,6 +154,10 @@ button {
 <script>
 const API = "https://script.google.com/macros/s/AKfycbwVdZs7juFLr9FHL3cMxNZs2VhzVv5wegm4IvIsyZ0uI8qD08kfqBH95YXzTxRIRri_/exec";
 
+function goHome(){
+  window.location.href = "index.html";
+}
+
 const form = document.getElementById("form");
 
 form.addEventListener("submit", function(e){
@@ -125,15 +166,16 @@ form.addEventListener("submit", function(e){
   let valid = true;
 
   form.querySelectorAll("input, select").forEach(el => {
-    el.style.border = "1px solid #ccc";
+    el.classList.remove("error");
+
     if(el.hasAttribute("required") && !el.value.trim()){
-      el.style.border = "2px solid red";
+      el.classList.add("error");
       valid = false;
     }
   });
 
   if(!valid){
-    alert("⚠️ Fill all required fields");
+    alert("⚠️ Please fill all required fields");
     return;
   }
 
@@ -155,9 +197,9 @@ form.addEventListener("submit", function(e){
 
     let box = document.getElementById("successBox");
     box.style.display = "block";
-    box.innerHTML = "✅ Saved<br>Txn ID: <b>" + result.txn + "</b>";
+    box.innerHTML = "✅ Payment Saved<br>Txn ID: <b>" + result.txn + "</b>";
 
-    // Delay for receipt fix
+    // Delay for receipt sync
     setTimeout(() => {
       window.location.href = "receipt.html?id=" + result.txn;
     }, 4000);
@@ -165,7 +207,9 @@ form.addEventListener("submit", function(e){
     form.reset();
   })
   .catch(err => {
-    alert("Error: " + err);
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("btn").innerText = "Save Payment";
+    alert("❌ Error: " + err);
   });
 });
 </script>
