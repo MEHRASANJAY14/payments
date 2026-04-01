@@ -46,8 +46,8 @@ body {
 
 /* CONTENT */
 .container {
-  margin-top:140px;   /* space for header */
-  margin-bottom:90px; /* space for footer */
+  margin-top:140px;
+  margin-bottom:90px;
   padding:10px;
 }
 
@@ -63,7 +63,6 @@ body {
   font-weight:bold;
   text-align:center;
   box-shadow:0 8px 20px rgba(0,0,0,0.3);
-  cursor:pointer;
 }
 
 .card:hover {
@@ -73,6 +72,31 @@ body {
 .icon {
   font-size:28px;
   margin-bottom:8px;
+}
+
+/* INPUT INSIDE CARD */
+.input-box {
+  margin-top:10px;
+}
+
+.input-box input {
+  width:90%;
+  padding:8px;
+  border-radius:10px;
+  border:none;
+  margin-top:5px;
+}
+
+.input-box button {
+  width:90%;
+  padding:8px;
+  margin-top:8px;
+  border:none;
+  border-radius:10px;
+  background:#1c3c75;
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
 }
 
 /* FOOTER FIXED */
@@ -111,27 +135,33 @@ body {
 <!-- HEADER -->
 <div class="header">
   <h2>💰 PAYMENT MANAGEMENT SYSTEM</h2>
-
   <div class="sub">Track Payments | Reports | Receipts</div>
-
   <div class="greeting" id="greeting"></div>
-
   <div class="datetime" id="datetime"></div>
 </div>
 
 <!-- CONTENT -->
 <div class="container">
 
+  <!-- ADD PAYMENT -->
   <div class="card" onclick="openPage('payment.html')">
     <div class="icon">💸</div>
     Add Payment
   </div>
 
-  <div class="card" onclick="printReceipt()">
+  <!-- PRINT RECEIPT (UPDATED ONLY THIS PART) -->
+  <div class="card">
     <div class="icon">🧾</div>
     Print Receipt
+
+    <div class="input-box">
+      <input type="text" id="txnId" placeholder="Enter Transaction ID">
+
+      <button onclick="openReceipt()">Open Receipt</button>
+    </div>
   </div>
 
+  <!-- REPORT -->
   <div class="card" onclick="openPage('report.html')">
     <div class="icon">📊</div>
     Generate Report
@@ -141,18 +171,11 @@ body {
 
 <!-- FOOTER -->
 <div class="footer">
-
   <a href="index.html" class="btn">🏠 Home</a>
   <a href="" onclick="location.reload()" class="btn">🔄 Refresh</a>
 
-  <div class="small">
-    © 2026 Payment System
-  </div>
-
-  <div class="small">
-    Maintained and Developed by Sanjay Mehra
-  </div>
-
+  <div class="small">© 2026 Payment System</div>
+  <div class="small">Maintained and Developed by Sanjay Mehra</div>
 </div>
 
 <script>
@@ -175,12 +198,16 @@ function openPage(p){
   window.location.href = p;
 }
 
-// Receipt
-function printReceipt(){
-  let id = prompt("Enter Transaction ID");
-  if(id){
-    window.location.href = "receipt.html?id=" + id;
+// NEW RECEIPT FUNCTION
+function openReceipt(){
+  let id = document.getElementById("txnId").value.trim();
+
+  if(!id){
+    alert("⚠️ Enter Transaction ID");
+    return;
   }
+
+  window.location.href = "receipt.html?id=" + id;
 }
 </script>
 
