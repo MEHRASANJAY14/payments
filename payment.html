@@ -29,17 +29,14 @@ body {
   box-shadow:0 10px 25px rgba(0,0,0,0.3);
 }
 
-/* GRID FORM */
+/* GRID */
 .form-grid {
   display:grid;
   grid-template-columns: 1fr 1fr;
   gap:12px;
 }
 
-/* FULL WIDTH */
-.full {
-  grid-column: span 2;
-}
+.full { grid-column: span 2; }
 
 /* INPUT */
 input, select {
@@ -48,7 +45,11 @@ input, select {
   border-radius:10px;
   border:1px solid #ccc;
   font-size:14px;
-  box-sizing:border-box;
+}
+
+/* ERROR */
+.error {
+  border:2px solid red;
 }
 
 /* BUTTON */
@@ -60,14 +61,24 @@ button {
   background:#1c3c75;
   color:#fff;
   font-weight:bold;
-  margin-top:10px;
 }
 
+/* SUCCESS BOX */
+.success-box {
+  display:none;
+  background:#4CAF50;
+  color:#fff;
+  padding:12px;
+  border-radius:10px;
+  text-align:center;
+  margin-bottom:10px;
+}
+
+/* LOADING */
 .loading {
   display:none;
   text-align:center;
   margin-top:10px;
-  color:#1c3c75;
 }
 
 /* FOOTER */
@@ -75,7 +86,6 @@ button {
   text-align:center;
   margin-top:15px;
 }
-
 .footer a {
   color:#fff;
   text-decoration:none;
@@ -91,13 +101,17 @@ button {
 
 <div class="container">
 
+  <!-- SUCCESS MESSAGE -->
+  <div id="successBox" class="success-box"></div>
+
   <form id="form" class="form-grid">
 
     <input type="text" name="person_name" placeholder="Person Name" class="full" required>
 
     <input type="number" name="amount" placeholder="Amount" required>
 
-    <select name="mode">
+    <select name="mode" required>
+      <option value="">Select Mode</option>
       <option>Cash</option>
       <option>UPI</option>
       <option>Bank</option>
@@ -106,7 +120,7 @@ button {
 
     <input type="text" name="purpose" placeholder="Purpose" class="full" required>
 
-    <select name="receiver_type">
+    <select name="receiver_type" required>
       <option value="">Receiver Type</option>
       <option>Vendor</option>
       <option>Employee</option>
@@ -114,7 +128,7 @@ button {
       <option>Other</option>
     </select>
 
-    <input type="text" name="remarks" placeholder="Remarks">
+    <input type="text" name="remarks" placeholder="Remarks (optional)">
 
     <div class="full">
       <button type="submit" id="btn">Save Payment</button>
@@ -133,13 +147,31 @@ button {
 <script>
 const API = "https://script.google.com/macros/s/AKfycbwVdZs7juFLr9FHL3cMxNZs2VhzVv5wegm4IvIsyZ0uI8qD08kfqBH95YXzTxRIRri_/exec";
 
-document.getElementById("form").addEventListener("submit", function(e){
+const form = document.getElementById("form");
+
+form.addEventListener("submit", function(e){
   e.preventDefault();
+
+  let valid = true;
+
+  // Remove old error
+  form.querySelectorAll("input, select").forEach(el => {
+    el.classList.remove("error");
+    if(el.hasAttribute("required") && !el.value.trim()){
+      el.classList.add("error");
+      valid = false;
+    }
+  });
+
+  if(!valid){
+    alert("⚠️ Please fill all required fields");
+    return;
+  }
 
   document.getElementById("loading").style.display = "block";
   document.getElementById("btn").innerText = "Saving...";
 
-  let data = Object.fromEntries(new FormData(this).entries());
+  let data = Object.fromEntries(new FormData(form).entries());
 
   fetch(API, {
     method: "POST",
@@ -150,15 +182,23 @@ document.getElementById("form").addEventListener("submit", function(e){
     document.getElementById("loading").style.display = "none";
     document.getElementById("btn").innerText = "Save Payment";
 
+    let box = document.getElementById("successBox");
+
     try {
       let result = JSON.parse(res);
-      alert("✅ Saved\nTxn ID: " + result.txn);
-      window.location.href = "receipt.html?id=" + result.txn;
+
+      box.style.display = "block";
+      box.innerHTML = "✅ Payment Saved<br>Txn ID: <b>" + result.txn + "</b>";
+
+      setTimeout(() => {
+        window.location.href = "receipt.html?id=" + result.txn;
+      }, 1500);
+
     } catch {
       alert("Saved but response issue");
     }
 
-    document.getElementById("form").reset();
+    form.reset();
   })
   .catch(err => {
     document.getElementById("loading").style.display = "none";
