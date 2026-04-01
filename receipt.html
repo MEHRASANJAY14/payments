@@ -1,57 +1,168 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Print Receipt</title>
-  <style>
-    body { font-family: Arial; padding:20px; }
-    .box {
-      border:2px solid #000;
-      padding:20px;
-      max-width:400px;
-      margin:auto;
-    }
-    button {
-      margin-top:20px;
-      padding:10px;
-      width:100%;
-    }
-  </style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payment Receipt</title>
+
+<style>
+body {
+  font-family:'Segoe UI', sans-serif;
+  background:#f2f5f9;
+  margin:0;
+  padding:20px;
+}
+
+/* RECEIPT CARD */
+.receipt {
+  max-width:420px;
+  margin:auto;
+  background:#fff;
+  border-radius:15px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+  padding:20px;
+}
+
+/* HEADER */
+.header {
+  text-align:center;
+  border-bottom:2px dashed #ccc;
+  padding-bottom:10px;
+  margin-bottom:15px;
+}
+
+.header h2 {
+  margin:0;
+  color:#1c3c75;
+}
+
+.header small {
+  color:#555;
+}
+
+/* ROW */
+.row {
+  display:flex;
+  justify-content:space-between;
+  margin:8px 0;
+  font-size:14px;
+}
+
+.label {
+  font-weight:600;
+  color:#555;
+}
+
+.value {
+  font-weight:bold;
+  color:#000;
+}
+
+/* AMOUNT HIGHLIGHT */
+.amount {
+  font-size:18px;
+  color:#0a7cff;
+}
+
+/* FOOTER */
+.footer {
+  text-align:center;
+  margin-top:15px;
+  border-top:2px dashed #ccc;
+  padding-top:10px;
+  font-size:12px;
+  color:#666;
+}
+
+/* BUTTONS */
+.btn {
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  margin-top:15px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.print-btn {
+  background:#1c3c75;
+  color:#fff;
+}
+
+.back-btn {
+  background:#ddd;
+}
+
+/* PRINT STYLE */
+@media print {
+  body {
+    background:#fff;
+  }
+
+  .btn {
+    display:none;
+  }
+
+  .receipt {
+    box-shadow:none;
+    border:none;
+  }
+}
+</style>
 </head>
 
 <body>
 
-<h2 align="center">🧾 Payment Receipt</h2>
+<div class="receipt" id="receiptBox">
+  <div class="header">
+    <h2>🧾 Payment Receipt</h2>
+    <small>Payment Management System</small>
+  </div>
 
-<div class="box" id="receipt">
-  Loading...
+  <div id="receipt">Loading...</div>
+
+  <div class="footer">
+    Thank you for your payment<br>
+    Maintained by Sanjay Mehra
+  </div>
 </div>
 
-<button onclick="window.print()">🖨️ Print</button>
+<button class="btn print-btn" onclick="window.print()">🖨️ Print Receipt</button>
+<button class="btn back-btn" onclick="goHome()">⬅ Back</button>
 
 <script>
 const params = new URLSearchParams(window.location.search);
 const txnId = params.get("id");
 
-fetch("https://opensheet.elk.sh/1imhirRNpRmDnxaTEANyCtcyr-IOt_PNXwVYUeDOWeBE/Payments")
+const API = "https://opensheet.elk.sh/1imhirRNpRmDnxaTEANyCtcyr-IOt_PNXwVYUeDOWeBE/Payments";
+
+fetch(API)
 .then(res => res.json())
 .then(data => {
+
   let row = data.find(r => r["Transaction ID"] === txnId);
 
   if(!row){
-    document.getElementById("receipt").innerHTML = "❌ Record Not Found";
+    document.getElementById("receipt").innerHTML = "❌ Receipt Not Found";
     return;
   }
 
   document.getElementById("receipt").innerHTML = `
-    <h3>Payment Receipt</h3>
-    <p><b>ID:</b> ${row["Transaction ID"]}</p>
-    <p><b>Name:</b> ${row["Person Name"]}</p>
-    <p><b>Account:</b> ${row["Account No"]}</p>
-    <p><b>Amount:</b> ₹${row["Amount"]}</p>
-    <p><b>Mode:</b> ${row["Mode"]}</p>
-    <p><b>Date:</b> ${row["Date"]}</p>
+    <div class="row"><span class="label">Txn ID</span><span class="value">${row["Transaction ID"]}</span></div>
+    <div class="row"><span class="label">Name</span><span class="value">${row["Person Name"]}</span></div>
+    <div class="row"><span class="label">Amount</span><span class="value amount">₹${row["Amount"]}</span></div>
+    <div class="row"><span class="label">Mode</span><span class="value">${row["Mode"]}</span></div>
+    <div class="row"><span class="label">Purpose</span><span class="value">${row["Purpose"]}</span></div>
+    <div class="row"><span class="label">Receiver</span><span class="value">${row["Receiver Type"]}</span></div>
+    <div class="row"><span class="label">Date</span><span class="value">${row["Payment Date"]}</span></div>
+    <div class="row"><span class="label">Status</span><span class="value">${row["Status"]}</span></div>
   `;
 });
+
+// Back
+function goHome(){
+  window.location.href = "index.html";
+}
 </script>
 
 </body>
