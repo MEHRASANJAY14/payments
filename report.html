@@ -50,7 +50,6 @@ th {
   color:#fff;
 }
 
-/* SCROLL */
 .table-container {
   overflow-x:auto;
 }
@@ -157,19 +156,21 @@ function loadReport(){
 
     let html = range + `<div class="table-container"><table>
       <tr>
-        <th>Date</th>
+        <th>Sr No</th>
+        <th>Payment Date</th>
         <th>Name</th>
-        <th>Amount</th>
         <th>Mode</th>
         <th>Purpose</th>
         <th>Receiver</th>
         <th>Status</th>
         <th>Remarks</th>
         <th>Txn ID</th>
+        <th>Amount</th>
       </tr>`;
 
     let total = 0;
     let count = 0;
+    let sr = 1;
 
     data.forEach(row => {
 
@@ -191,15 +192,16 @@ function loadReport(){
 
       html += `
       <tr>
+        <td>${sr++}</td>
         <td>${dateStr.split(" ")[0]}</td>
         <td>${getValue(row,"Person Name")}</td>
-        <td>₹${amt}</td>
         <td>${getValue(row,"Mode")}</td>
         <td>${getValue(row,"Purpose")}</td>
         <td>${getValue(row,"Receiver Type")}</td>
         <td>${getValue(row,"Status")}</td>
         <td>${getValue(row,"Remarks")}</td>
         <td>${getValue(row,"Transaction ID")}</td>
+        <td>₹${amt}</td>
       </tr>`;
     });
 
