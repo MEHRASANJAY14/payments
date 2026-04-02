@@ -98,24 +98,28 @@ th {
 <script>
 const API = "https://opensheet.elk.sh/1imhirRNpRmDnxaTEANyCtcyr-IOt_PNXwVYUeDOWeBE/Payments";
 
-// ✅ INPUT DATE FIX
+// INPUT DATE (yyyy-mm-dd)
 function convertInputDate(val){
   if(!val) return null;
 
-  let parts = val.split("-"); // yyyy-mm-dd
+  let parts = val.split("-");
   return new Date(parts[0], parts[1]-1, parts[2]);
 }
 
-// ✅ SHEET DATE FIX
+// SHEET DATE (dd/MM/yyyy + time)
 function parseDate(value){
   if(!value) return null;
 
-  let clean = value.split(" ")[0];
-  let parts = clean.split(/[\/\-]/);
+  let clean = value.split(" ")[0]; // remove time
+  let parts = clean.split("/");
 
-  if(parts.length < 3) return null;
+  if(parts.length !== 3) return null;
 
-  return new Date(parts[2], parts[1]-1, parts[0]);
+  let day = parseInt(parts[0]);
+  let month = parseInt(parts[1]) - 1;
+  let year = parseInt(parts[2]);
+
+  return new Date(year, month, day);
 }
 
 // SAFE GET
@@ -145,8 +149,9 @@ function loadReport(){
   let from = convertInputDate(fromVal);
   let to = convertInputDate(toVal);
 
+  // include full day
   if(to){
-    to.setHours(23,59,59,999); // full day include
+    to.setHours(23,59,59,999);
   }
 
   fetch(API)
@@ -191,7 +196,7 @@ function loadReport(){
 
       html += `
       <tr>
-        <td>${dateStr}</td>
+        <td>${dateStr.split(" ")[0]}</td>
         <td>${getValue(row,"Person Name")}</td>
         <td>₹${amt}</td>
         <td>${getValue(row,"Mode")}</td>
