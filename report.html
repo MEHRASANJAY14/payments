@@ -16,14 +16,12 @@ h2 {
   color:#1c3c75;
 }
 
-/* INPUT */
 input, button {
   padding:12px;
   margin:6px 0;
   width:100%;
   border-radius:10px;
   border:1px solid #ccc;
-  font-size:14px;
 }
 
 button {
@@ -32,26 +30,18 @@ button {
   font-weight:bold;
 }
 
-/* DATE RANGE */
-.range {
-  text-align:center;
-  font-weight:bold;
-  margin-top:10px;
-}
-
 /* TABLE */
 table {
   width:100%;
   border-collapse: collapse;
   margin-top:15px;
   background:#fff;
-  border-radius:10px;
-  overflow:hidden;
+  font-size:12px;
 }
 
 th, td {
-  padding:10px;
-  border-bottom:1px solid #ddd;
+  padding:8px;
+  border:1px solid #ddd;
   text-align:center;
 }
 
@@ -60,27 +50,32 @@ th {
   color:#fff;
 }
 
+/* SCROLL */
+.table-container {
+  overflow-x:auto;
+}
+
+.range {
+  text-align:center;
+  font-weight:bold;
+  margin-top:10px;
+}
+
 .total {
   margin-top:10px;
   font-weight:bold;
   text-align:right;
-  font-size:16px;
 }
 
 .nodata {
   text-align:center;
   margin-top:20px;
-  font-weight:bold;
-  color:#777;
 }
 
 /* PRINT */
 @media print {
   button, input {
     display:none;
-  }
-  body {
-    background:#fff;
   }
 }
 </style>
@@ -97,7 +92,7 @@ th {
 <input type="number" id="amountSearch" placeholder="Search by Amount">
 
 <button onclick="loadReport()">Generate Report</button>
-<button onclick="printReport()">🖨️ Print Report</button>
+<button onclick="window.print()">🖨️ Print</button>
 <button onclick="goHome()">⬅ Back</button>
 
 <div id="result"></div>
@@ -105,51 +100,37 @@ th {
 <script>
 const API = "https://opensheet.elk.sh/1imhirRNpRmDnxaTEANyCtcyr-IOt_PNXwVYUeDOWeBE/Payments";
 
-// FORMAT DATE FOR DISPLAY
+// FORMAT DATE
 function formatDisplayDate(val){
-  let parts = val.split("-");
-  let year = parts[0];
-  let month = parts[1];
-  let day = parts[2];
-
-  let monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-
-  return `${day}-${monthNames[parseInt(month)-1]}-${year}`;
+  let p = val.split("-");
+  let m = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return `${p[2]}-${m[p[1]-1]}-${p[0]}`;
 }
 
 // INPUT DATE
 function convertInputDate(val){
   if(!val) return null;
-  let parts = val.split("-");
-  return new Date(parts[0], parts[1]-1, parts[2]);
+  let p = val.split("-");
+  return new Date(p[0], p[1]-1, p[2]);
 }
 
 // SHEET DATE
 function parseDate(value){
   if(!value) return null;
-
   let clean = value.split(" ")[0];
-  let parts = clean.split("/");
-
-  if(parts.length !== 3) return null;
-
-  return new Date(parts[2], parts[1]-1, parts[0]);
+  let p = clean.split("/");
+  return new Date(p[2], p[1]-1, p[0]);
 }
 
 // SAFE GET
 function getValue(row, key){
-  let foundKey = Object.keys(row).find(k => k.trim() === key);
-  return foundKey ? row[foundKey] : "";
+  let k = Object.keys(row).find(x => x.trim() === key);
+  return k ? row[k] : "";
 }
 
 // BACK
 function goHome(){
   window.location.href = "index.html";
-}
-
-// PRINT
-function printReport(){
-  window.print();
 }
 
 function loadReport(){
@@ -163,54 +144,45 @@ function loadReport(){
   let from = convertInputDate(fromVal);
   let to = convertInputDate(toVal);
 
-  if(to){
-    to.setHours(23,59,59,999);
-  }
+  if(to) to.setHours(23,59,59,999);
 
   fetch(API)
   .then(res => res.json())
   .then(data => {
 
-    let rangeText = "";
-
+    let range = "";
     if(fromVal && toVal){
-      rangeText = `
-        <div class="range">
-          Date Range: ${formatDisplayDate(fromVal)} to ${formatDisplayDate(toVal)}
-        </div>
-      `;
+      range = `<div class="range">Date Range: ${formatDisplayDate(fromVal)} to ${formatDisplayDate(toVal)}</div>`;
     }
 
-    let html = rangeText + `
-      <table>
-        <tr>
-          <th>Date</th>
-          <th>Name</th>
-          <th>Amount</th>
-          <th>Mode</th>
-        </tr>
-    `;
+    let html = range + `<div class="table-container"><table>
+      <tr>
+        <th>Date</th>
+        <th>Name</th>
+        <th>Amount</th>
+        <th>Mode</th>
+        <th>Purpose</th>
+        <th>Receiver</th>
+        <th>Status</th>
+        <th>Remarks</th>
+        <th>Txn ID</th>
+      </tr>`;
 
     let total = 0;
     let count = 0;
 
     data.forEach(row => {
 
-      let dateStr = getValue(row, "Payment Date");
+      let dateStr = getValue(row,"Payment Date");
       let d = parseDate(dateStr);
 
       if(!d) return;
 
-      // DATE FILTER
-      if(from && to){
-        if(d < from || d > to) return;
-      }
+      if(from && to && (d < from || d > to)) return;
 
-      // NAME FILTER
       let name = getValue(row,"Person Name").toLowerCase();
       if(nameSearch && !name.includes(nameSearch)) return;
 
-      // AMOUNT FILTER
       let amt = Number(getValue(row,"Amount")) || 0;
       if(amountSearch && amt != amountSearch) return;
 
@@ -223,14 +195,18 @@ function loadReport(){
         <td>${getValue(row,"Person Name")}</td>
         <td>₹${amt}</td>
         <td>${getValue(row,"Mode")}</td>
+        <td>${getValue(row,"Purpose")}</td>
+        <td>${getValue(row,"Receiver Type")}</td>
+        <td>${getValue(row,"Status")}</td>
+        <td>${getValue(row,"Remarks")}</td>
+        <td>${getValue(row,"Transaction ID")}</td>
       </tr>`;
     });
 
-    html += "</table>";
+    html += "</table></div>";
 
     if(count === 0){
-      document.getElementById("result").innerHTML =
-        "<div class='nodata'>❌ No Data Found</div>";
+      document.getElementById("result").innerHTML = "<div class='nodata'>❌ No Data Found</div>";
       return;
     }
 
