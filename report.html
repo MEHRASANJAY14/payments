@@ -32,9 +32,14 @@ button {
   font-weight:bold;
 }
 
+/* TABLE WRAPPER */
+#result {
+  overflow-x:auto;
+}
+
 /* TABLE */
 table {
-  width:100%;
+  min-width:800px;
   border-collapse: collapse;
   margin-top:15px;
   background:#fff;
@@ -101,7 +106,6 @@ const API = "https://opensheet.elk.sh/1imhirRNpRmDnxaTEANyCtcyr-IOt_PNXwVYUeDOWe
 // INPUT DATE (yyyy-mm-dd)
 function convertInputDate(val){
   if(!val) return null;
-
   let parts = val.split("-");
   return new Date(parts[0], parts[1]-1, parts[2]);
 }
@@ -110,16 +114,12 @@ function convertInputDate(val){
 function parseDate(value){
   if(!value) return null;
 
-  let clean = value.split(" ")[0]; // remove time
+  let clean = value.split(" ")[0];
   let parts = clean.split("/");
 
   if(parts.length !== 3) return null;
 
-  let day = parseInt(parts[0]);
-  let month = parseInt(parts[1]) - 1;
-  let year = parseInt(parts[2]);
-
-  return new Date(year, month, day);
+  return new Date(parts[2], parts[1]-1, parts[0]);
 }
 
 // SAFE GET
@@ -149,7 +149,6 @@ function loadReport(){
   let from = convertInputDate(fromVal);
   let to = convertInputDate(toVal);
 
-  // include full day
   if(to){
     to.setHours(23,59,59,999);
   }
@@ -162,9 +161,13 @@ function loadReport(){
       <table>
         <tr>
           <th>Date</th>
+          <th>Txn ID</th>
           <th>Name</th>
           <th>Amount</th>
           <th>Mode</th>
+          <th>Purpose</th>
+          <th>Receiver</th>
+          <th>Status</th>
         </tr>
     `;
 
@@ -197,9 +200,13 @@ function loadReport(){
       html += `
       <tr>
         <td>${dateStr.split(" ")[0]}</td>
+        <td>${getValue(row,"Transaction ID")}</td>
         <td>${getValue(row,"Person Name")}</td>
         <td>₹${amt}</td>
         <td>${getValue(row,"Mode")}</td>
+        <td>${getValue(row,"Purpose")}</td>
+        <td>${getValue(row,"Receiver Type")}</td>
+        <td>${getValue(row,"Status")}</td>
       </tr>`;
     });
 
