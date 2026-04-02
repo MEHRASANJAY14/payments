@@ -32,14 +32,16 @@ button {
   font-weight:bold;
 }
 
-/* TABLE WRAPPER */
-#result {
-  overflow-x:auto;
+/* DATE RANGE */
+.range {
+  text-align:center;
+  font-weight:bold;
+  margin-top:10px;
 }
 
 /* TABLE */
 table {
-  min-width:800px;
+  width:100%;
   border-collapse: collapse;
   margin-top:15px;
   background:#fff;
@@ -103,14 +105,26 @@ th {
 <script>
 const API = "https://opensheet.elk.sh/1imhirRNpRmDnxaTEANyCtcyr-IOt_PNXwVYUeDOWeBE/Payments";
 
-// INPUT DATE (yyyy-mm-dd)
+// FORMAT DATE FOR DISPLAY
+function formatDisplayDate(val){
+  let parts = val.split("-");
+  let year = parts[0];
+  let month = parts[1];
+  let day = parts[2];
+
+  let monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  return `${day}-${monthNames[parseInt(month)-1]}-${year}`;
+}
+
+// INPUT DATE
 function convertInputDate(val){
   if(!val) return null;
   let parts = val.split("-");
   return new Date(parts[0], parts[1]-1, parts[2]);
 }
 
-// SHEET DATE (dd/MM/yyyy + time)
+// SHEET DATE
 function parseDate(value){
   if(!value) return null;
 
@@ -157,17 +171,23 @@ function loadReport(){
   .then(res => res.json())
   .then(data => {
 
-    let html = `
+    let rangeText = "";
+
+    if(fromVal && toVal){
+      rangeText = `
+        <div class="range">
+          Date Range: ${formatDisplayDate(fromVal)} to ${formatDisplayDate(toVal)}
+        </div>
+      `;
+    }
+
+    let html = rangeText + `
       <table>
         <tr>
           <th>Date</th>
-          <th>Txn ID</th>
           <th>Name</th>
           <th>Amount</th>
           <th>Mode</th>
-          <th>Purpose</th>
-          <th>Receiver</th>
-          <th>Status</th>
         </tr>
     `;
 
@@ -200,13 +220,9 @@ function loadReport(){
       html += `
       <tr>
         <td>${dateStr.split(" ")[0]}</td>
-        <td>${getValue(row,"Transaction ID")}</td>
         <td>${getValue(row,"Person Name")}</td>
         <td>₹${amt}</td>
         <td>${getValue(row,"Mode")}</td>
-        <td>${getValue(row,"Purpose")}</td>
-        <td>${getValue(row,"Receiver Type")}</td>
-        <td>${getValue(row,"Status")}</td>
       </tr>`;
     });
 
